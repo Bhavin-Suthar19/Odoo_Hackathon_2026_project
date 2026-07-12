@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Network, LogOut, ShieldAlert, ShieldCheck, User } from 'lucide-react';
+import { Network, LogOut, ShieldAlert, ShieldCheck, User, Sun, Moon } from 'lucide-react';
 
-export default function Navbar({ currentTab, setCurrentTab }) {
+export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
   const { user, logout, impersonate } = useAuth();
 
   const mockUsers = [
@@ -18,7 +18,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(9, 11, 16, 0.85)',
+        backgroundColor: 'var(--bg-header)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-glass)',
         padding: '0.8rem 1.5rem',
@@ -114,6 +114,23 @@ export default function Navbar({ currentTab, setCurrentTab }) {
 
         {/* User Session Profile & Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            className="btn btn-secondary"
+            title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            style={{
+              padding: '0.45rem 0.65rem',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+          </button>
+
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div
