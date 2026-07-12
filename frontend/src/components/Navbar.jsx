@@ -1,9 +1,16 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Terminal, LogOut, User, ShieldCheck } from 'lucide-react';
+import { Network, LogOut, ShieldAlert, ShieldCheck, User } from 'lucide-react';
 
 export default function Navbar({ currentTab, setCurrentTab }) {
-  const { user, logout } = useAuth();
+  const { user, logout, impersonate } = useAuth();
+
+  const mockUsers = [
+    { name: 'Admin User', email: 'admin@company.com', role: 'Admin' },
+    { name: 'Alex Mercer', email: 'manager@company.com', role: 'Asset Manager' },
+    { name: 'Priya Shah', email: 'priya@company.com', role: 'Department Head' },
+    { name: 'Raj Patel', email: 'raj@company.com', role: 'Employee' },
+  ];
 
   return (
     <header
@@ -11,29 +18,33 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(9, 11, 16, 0.8)',
-        backdropFilter: 'blur(12px)',
+        backgroundColor: 'rgba(9, 11, 16, 0.85)',
+        backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-glass)',
-        padding: '0.9rem 1.5rem',
+        padding: '0.8rem 1.5rem',
       }}
     >
       <div
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1440px',
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
         }}
       >
         {/* Brand Logo & Title */}
         <div
-          onClick={() => setCurrentTab('dashboard')}
+          onClick={() => {
+            if (user) setCurrentTab('dashboard');
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.75rem',
-            cursor: 'pointer',
+            cursor: user ? 'pointer' : 'default',
           }}
         >
           <div
@@ -48,80 +59,129 @@ export default function Navbar({ currentTab, setCurrentTab }) {
               boxShadow: 'var(--shadow-glow)',
             }}
           >
-            <Terminal size={22} color="#ffffff" />
+            <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>AF</span>
           </div>
           <div>
-            <h1 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Hackathon<span className="heading-gradient">Core</span>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>
+              Asset<span className="heading-gradient">Flow</span>
             </h1>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-              MERN + Cloud Supabase Starter
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+              Enterprise Resource & Lifecycle ERP
             </p>
           </div>
         </div>
 
-        {/* Navigation Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button
-            onClick={() => setCurrentTab('dashboard')}
+        {/* Impersonation Panel (Developer Assist) */}
+        {user && (
+          <div
             style={{
-              background: currentTab === 'dashboard' ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-              border: '1px solid',
-              borderColor: currentTab === 'dashboard' ? 'rgba(139, 92, 246, 0.4)' : 'transparent',
-              color: currentTab === 'dashboard' ? '#c4b5fd' : 'var(--text-secondary)',
-              padding: '0.5rem 1rem',
-              borderRadius: '10px',
-              fontWeight: 600,
-              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              background: 'rgba(139, 92, 246, 0.08)',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              padding: '0.35rem 0.8rem',
+              borderRadius: '12px',
             }}
           >
-            Dashboard
-          </button>
-
-          {user ? (
-            <div
+            <ShieldAlert size={14} color="#a78bfa" style={{ animation: 'pulseGlow 2s infinite' }} />
+            <span style={{ fontSize: '0.75rem', color: '#c4b5fd', fontWeight: 600 }}>
+              Testing Tool (Impersonate):
+            </span>
+            <select
+              value={user.email}
+              onChange={(e) => impersonate(e.target.value)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.8rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                padding: '0.4rem 0.9rem',
-                borderRadius: '9999px',
+                background: '#0f131d',
                 border: '1px solid var(--border-glass)',
+                color: 'var(--text-primary)',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                outline: 'none',
+                cursor: 'pointer',
               }}
             >
-              <ShieldCheck size={16} color="#34d399" />
-              <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-                {user.name}
-              </span>
-              <button
-                onClick={logout}
-                title="Logout"
+              {mockUsers.map((mu) => (
+                <option key={mu.email} value={mu.email}>
+                  {mu.role} ({mu.name.split(' ')[0]})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* User Session Profile & Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div
                 style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
+                  gap: '0.5rem',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: '10px',
+                  border: '1px solid var(--border-glass)',
                 }}
               >
-                <LogOut size={16} />
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981',
+                    boxShadow: '0 0 8px #10b981',
+                  }}
+                />
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {user.name}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    background: 'rgba(139, 92, 246, 0.2)',
+                    color: '#c4b5fd',
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '6px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {user.role}
+                </span>
+              </div>
+              <button
+                onClick={logout}
+                title="Sign Out"
+                className="btn btn-secondary"
+                style={{
+                  padding: '0.4rem 0.75rem',
+                  fontSize: '0.8rem',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  gap: '0.35rem',
+                }}
+              >
+                <LogOut size={14} />
+                <span>Exit</span>
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 onClick={() => setCurrentTab('login')}
                 className="btn btn-secondary"
-                style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}
+                style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
               >
-                Login
+                Sign In
               </button>
               <button
                 onClick={() => setCurrentTab('signup')}
                 className="btn btn-primary"
-                style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}
+                style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
               >
                 Sign Up
               </button>

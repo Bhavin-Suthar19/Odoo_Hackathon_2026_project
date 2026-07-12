@@ -1,279 +1,247 @@
 import React, { useState } from 'react';
+import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import StatusCard from '../components/StatusCard';
 import {
-  Code2,
-  Database,
-  Terminal,
-  Cookie,
-  ShieldCheck,
-  CheckCircle,
-  HelpCircle,
-  Play,
-  Send,
+  Layers,
+  UserCheck,
+  Wrench,
+  Calendar,
+  ArrowRightLeft,
+  AlertTriangle,
+  Clock,
+  Plus,
+  ArrowRight,
+  TrendingUp,
+  MapPin
 } from 'lucide-react';
-import apiClient from '../api/client';
 
 export default function Dashboard({ setCurrentTab }) {
   const { user } = useAuth();
-  const [testResult, setTestResult] = useState(null);
-  const [testingApi, setTestingApi] = useState(false);
+  const {
+    assets,
+    bookings,
+    transfers,
+    maintenances,
+    activityLogs,
+    allocateAsset,
+    bookResource,
+    raiseMaintenanceRequest
+  } = useData();
 
-  const runApiTest = async () => {
-    setTestingApi(true);
-    try {
-      const res = await apiClient.get('/auth/me');
-      setTestResult({
-        status: 200,
-        data: res.data,
-      });
-    } catch (err) {
-      setTestResult({
-        status: err.response?.status || 500,
-        error: err.response?.data?.message || err.message,
-      });
-    } finally {
-      setTestingApi(false);
-    }
-  };
+  // Quick action form triggers
+  const [showAssetQuick, setShowAssetQuick] = useState(false);
+  const [showBookingQuick, setShowBookingQuick] = useState(false);
+  const [showMaintQuick, setShowMaintQuick] = useState(false);
+
+  // 1. Calculate KPI Statistics
+  const totalAssetsCount = assets.length;
+  const availableCount = assets.filter(a => a.status === 'Available').length;
+  const allocatedCount = assets.filter(a => a.status === 'Allocated').length;
+  const maintenanceCount = assets.filter(a => a.status === 'Under Maintenance').length;
+  const activeBookingsCount = bookings.filter(b => b.status === 'Upcoming' || b.status === 'Ongoing').length;
+  const pendingTransfersCount = transfers.filter(t => t.status === 'Requested').length;
+
+  // 2. Identify Overdue Allocations (past expected return date)
+  const todayStr = '2026-07-12'; // Mock today date
+  const overdueAllocations = assets.filter(a => {
+    if (a.status !== 'Allocated' || !a.expectedReturnDate) return false;
+    return new Date(a.expectedReturnDate) < new Date(todayStr);
+  });
+
+  const upcomingReturns = assets.filter(a => {
+    if (a.status !== 'Allocated' || !a.expectedReturnDate) return false;
+    return new Date(a.expectedReturnDate) >= new Date(todayStr);
+  });
 
   return (
     <div>
-      {/* Hero Welcome Section */}
-      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '0.4rem 1rem',
-            borderRadius: '9999px',
-            background: 'rgba(139, 92, 246, 0.15)',
-            color: '#c4b5fd',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginBottom: '1rem',
-          }}
-        >
-          4-Person Team Hackathon Architecture
-        </span>
-        <h1 style={{ fontSize: '2.6rem', fontWeight: 800, lineHeight: 1.15 }}>
-          Ready to Build Your <span className="heading-gradient">Hackathon Winner</span>
-        </h1>
-        <p
-          style={{
-            color: 'var(--text-secondary)',
-            fontSize: '1.05rem',
-            maxWidth: '700px',
-            margin: '0.75rem auto 0',
-          }}
-        >
-          Clean separation of concerns between React Frontend (Port 5173) and Node/Express Backend
-          (Port 5000), powered by Cloud Supabase.
+      {/* Welcome Banner */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 850, lineHeight: 1.1 }}>
+          Welcome back, <span className="heading-gradient">{user.name}</span>
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
+          Current Role Context: <strong>{user.role}</strong> ({user.department} Department)
         </p>
       </div>
 
-      {/* Live Health & Connection Status Card */}
-      <StatusCard />
-
-      {/* Current User Auth & Cookie State Card */}
-      <div className="glass-panel" style={{ padding: '1.75rem', marginBottom: '2rem' }}>
+      {/* Overdue Returns Alert Banner */}
+      {overdueAllocations.length > 0 && (
         <div
           style={{
+            background: 'rgba(244, 63, 94, 0.12)',
+            border: '1px solid rgba(244, 63, 94, 0.4)',
+            borderRadius: '16px',
+            padding: '1rem 1.5rem',
+            marginBottom: '2rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
             gap: '1rem',
+            animation: 'pulseGlow 3s infinite ease-in-out',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div
-              style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '14px',
-                background: user ? 'rgba(16, 185, 129, 0.15)' : 'rgba(139, 92, 246, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Cookie size={24} color={user ? '#34d399' : '#a78bfa'} />
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <AlertTriangle size={24} color="#fda4af" />
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
-                {user ? `Active Cookie Session: ${user.name}` : 'No Session Cookie Found'}
-              </h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
-                {user
-                  ? `Authenticated via ${user.provider} | HTTP-Only Cookie Active`
-                  : 'Test the session & cookie flow by creating a demo account or logging in.'}
+              <strong style={{ fontSize: '0.95rem', color: '#fda4af' }}>
+                {overdueAllocations.length} Assets Overdue for Action!
+              </strong>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                Devices have exceeded their expected return dates. Please process returns or follow up.
               </p>
             </div>
           </div>
+          <button
+            onClick={() => setCurrentTab('allocation')}
+            className="btn btn-secondary"
+            style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', background: 'rgba(244, 63, 94, 0.2)', color: '#fda4af', border: 'none' }}
+          >
+            Review Overdue Lists <ArrowRight size={14} />
+          </button>
+        </div>
+      )}
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            {!user ? (
-              <>
-                <button
-                  onClick={() => setCurrentTab('login')}
-                  className="btn btn-secondary"
-                  style={{ fontSize: '0.85rem' }}
-                >
-                  Test Login
-                </button>
-                <button
-                  onClick={() => setCurrentTab('signup')}
-                  className="btn btn-primary"
-                  style={{ fontSize: '0.85rem' }}
-                >
-                  Test Sign Up
-                </button>
-              </>
+      {/* KPI Cards Grid */}
+      <div className="grid-3" style={{ marginBottom: '2.5rem' }}>
+        {/* KPI 1: Available */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-emerald)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Assets Available</span>
+            <Layers size={18} color="var(--accent-emerald)" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{availableCount}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Ready for employee allocation</p>
+        </div>
+
+        {/* KPI 2: Allocated */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-primary)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Assets Allocated</span>
+            <UserCheck size={18} color="var(--accent-primary)" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{allocatedCount}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Held by employees/departments</p>
+        </div>
+
+        {/* KPI 3: Maintenance Today */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-rose)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Under Maintenance</span>
+            <Wrench size={18} color="var(--accent-rose)" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{maintenanceCount}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Currently out of service for repair</p>
+        </div>
+
+        {/* KPI 4: Active Bookings */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-cyan)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Active Bookings</span>
+            <Calendar size={18} color="var(--accent-cyan)" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{activeBookingsCount}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Shared resources reserved</p>
+        </div>
+
+        {/* KPI 5: Pending Transfers */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #fca5a5' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Pending Transfers</span>
+            <ArrowRightLeft size={18} color="#fca5a5" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{pendingTransfersCount}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Device custody transfers awaiting approval</p>
+        </div>
+
+        {/* KPI 6: Overdue Returns */}
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #f43f5e' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Overdue Returns</span>
+            <Clock size={18} color="#f43f5e" />
+          </div>
+          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: overdueAllocations.length > 0 ? '#fda4af' : 'var(--text-primary)' }}>{overdueAllocations.length}</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Overdue return schedules flagged</p>
+        </div>
+      </div>
+
+      {/* Quick Action Buttons section */}
+      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>Operational Quick Actions</h3>
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+        {(user.role === 'Admin' || user.role === 'Asset Manager') && (
+          <button onClick={() => setCurrentTab('assets')} className="btn btn-primary" style={{ padding: '0.85rem 1.4rem' }}>
+            <Plus size={18} /> Register New Asset
+          </button>
+        )}
+        <button onClick={() => setCurrentTab('booking')} className="btn btn-secondary" style={{ padding: '0.85rem 1.4rem' }}>
+          <Calendar size={18} /> Book Shared Resource
+        </button>
+        <button onClick={() => setCurrentTab('maintenance')} className="btn btn-secondary" style={{ padding: '0.85rem 1.4rem' }}>
+          <Wrench size={18} /> Raise Maintenance Request
+        </button>
+      </div>
+
+      <div className="grid-2" style={{ alignItems: 'start', gap: '2rem', marginBottom: '2rem' }}>
+        {/* Overdue Items Detail List */}
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 850, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Clock size={20} color="#f43f5e" />
+            <span>Overdue Returns Listing</span>
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {overdueAllocations.length === 0 ? (
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic', padding: '1rem', textAlign: 'center' }}>
+                All devices are returned or well within expected deadlines.
+              </span>
             ) : (
-              <button
-                onClick={runApiTest}
-                disabled={testingApi}
-                className="btn btn-primary"
-                style={{ fontSize: '0.85rem' }}
-              >
-                <Send size={15} />
-                {testingApi ? 'Testing API...' : 'Test Protected API (/api/auth/me)'}
-              </button>
+              overdueAllocations.map(ast => (
+                <div
+                  key={ast.id}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(244, 63, 94, 0.2)',
+                    borderRadius: '10px',
+                    padding: '0.75rem 1rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <strong style={{ fontSize: '0.88rem' }}>{ast.name}</strong>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-cyan)' }}>{ast.tag}</span>
+                    </div>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                      Held by: <strong>{ast.currentHolder}</strong>
+                    </p>
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: '#fca5a5', fontWeight: 700 }}>
+                    Due: {ast.expectedReturnDate}
+                  </span>
+                </div>
+              ))
             )}
           </div>
         </div>
 
-        {/* API Response Output Box */}
-        {testResult && (
-          <div
-            style={{
-              marginTop: '1.25rem',
-              background: 'rgba(9, 11, 16, 0.85)',
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '1px solid var(--border-glass)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.85rem',
-            }}
-          >
-            <p style={{ color: 'var(--accent-cyan)', marginBottom: '0.5rem', fontWeight: 600 }}>
-              API RESPONSE FROM BACKEND PORT 5000:
-            </p>
-            <pre style={{ color: 'var(--text-primary)', overflowX: 'auto' }}>
-              {JSON.stringify(testResult, null, 2)}
-            </pre>
+        {/* Recent Activity List */}
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 850, marginBottom: '1.25rem' }}>Recent Operations Stream</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {activityLogs.slice(0, 4).map((log) => (
+              <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#a78bfa', marginTop: '0.35rem', flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <strong>{log.action}</strong>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>by {log.user} • {log.date}</span>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-      </div>
-
-      {/* 4-Person Team Guide Breakdown */}
-      <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.2rem' }}>
-        👥 Team Collaboration Guide (Separation of Concerns)
-      </h2>
-
-      <div className="grid-2">
-        {/* Frontend Developers Card */}
-        <div className="glass-panel" style={{ padding: '1.6rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              marginBottom: '1rem',
-            }}
-          >
-            <Code2 size={24} color="var(--accent-cyan)" />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Frontend Developers (`frontend/`)
-            </h3>
-          </div>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Build responsive pages and dynamic React UI components without touching server code.
-          </p>
-          <ul
-            style={{
-              listStyle: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.65rem',
-              fontSize: '0.88rem',
-            }}
-          >
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-cyan)' }}>•</span>
-              <span>
-                <strong>Pages:</strong> Create your new pages in <code>frontend/src/pages/</code>.
-              </span>
-            </li>
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-cyan)' }}>•</span>
-              <span>
-                <strong>API Calling:</strong> Import <code>apiClient</code> from{' '}
-                <code>src/api/client.js</code>. It handles CORS and sends HTTP-Only cookies to
-                Port 5000 automatically.
-              </span>
-            </li>
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-cyan)' }}>•</span>
-              <span>
-                <strong>Styling:</strong> Use <code>src/index.css</code> glassmorphic design tokens
-                to keep the wow-factor UI.
-              </span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Backend Developers Card */}
-        <div className="glass-panel" style={{ padding: '1.6rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              marginBottom: '1rem',
-            }}
-          >
-            <Database size={24} color="var(--accent-primary)" />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-              Backend Developers (`backend/`)
-            </h3>
-          </div>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-            Handle business logic, Cloud Supabase database queries, and secure session management.
-          </p>
-          <ul
-            style={{
-              listStyle: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.65rem',
-              fontSize: '0.88rem',
-            }}
-          >
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-primary)' }}>•</span>
-              <span>
-                <strong>Routes & Controllers:</strong> Add endpoints in <code>backend/routes/</code>{' '}
-                and write business logic in <code>backend/controllers/</code>.
-              </span>
-            </li>
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-primary)' }}>•</span>
-              <span>
-                <strong>Cloud Supabase:</strong> Import <code>supabase</code> from{' '}
-                <code>backend/config/supabase.js</code> to query tables or run auth actions.
-              </span>
-            </li>
-            <li style={{ display: 'flex', gap: '0.5rem' }}>
-              <span style={{ color: 'var(--accent-primary)' }}>•</span>
-              <span>
-                <strong>Env Config:</strong> Update <code>SUPABASE_URL</code> and{' '}
-                <code>SUPABASE_ANON_KEY</code> in <code>backend/.env</code>.
-              </span>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
