@@ -17,6 +17,7 @@ const morgan = require('morgan');
 
 const authRoutes = require('./routes/authRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const erpRoutes = require('./routes/erpRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -37,10 +38,10 @@ app.use(express.urlencoded({ extended: true }));
 // Parse HTTP-Only cookies sent by the frontend
 app.use(cookieParser());
 
-// CORS configuration: Allow requests & HTTP-only cookies from Frontend Port
+// CORS configuration: Allow requests & HTTP-only cookies from any frontend Origin
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: true, // Dynamically echoes request origin so localhost, 127.0.0.1, LAN IP all work
     credentials: true, // IMPORTANT: Enables sending and receiving cookies across ports
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -56,6 +57,9 @@ app.use('/api/health', healthRoutes);
 
 // Authentication & Demo user endpoints
 app.use('/api/auth', authRoutes);
+
+// Enterprise Asset & Resource Management ERP endpoints
+app.use('/api/erp', erpRoutes);
 
 // Root informative endpoint
 app.get('/', (req, res) => {

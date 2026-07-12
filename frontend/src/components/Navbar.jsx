@@ -92,48 +92,6 @@ export default function Navbar({ currentTab, setCurrentTab, theme, setTheme, isS
         </div>
       </div>
 
-        {/* Impersonation Panel (Developer Assist) */}
-        {user && (
-          <div
-            className="navbar-desktop-only"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              background: 'rgba(139, 92, 246, 0.08)',
-              border: '1px solid rgba(139, 92, 246, 0.25)',
-              padding: '0.35rem 0.8rem',
-              borderRadius: '12px',
-            }}
-          >
-            <ShieldAlert size={14} color="#a78bfa" style={{ animation: 'pulseGlow 2s infinite' }} />
-            <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple-soft)', fontWeight: 600 }}>
-              Testing Tool (Impersonate):
-            </span>
-            <select
-              value={user.email}
-              onChange={(e) => impersonate(e.target.value)}
-              style={{
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border-glass)',
-                color: 'var(--text-primary)',
-                padding: '0.2rem 0.5rem',
-                borderRadius: '8px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              {mockUsers.map((mu) => (
-                <option key={mu.email} value={mu.email}>
-                  {mu.role} ({mu.name.split(' ')[0]})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         {/* User Session Profile & Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {/* Theme Toggle Button */}

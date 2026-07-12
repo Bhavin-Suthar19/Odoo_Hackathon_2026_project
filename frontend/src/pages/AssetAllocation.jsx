@@ -35,46 +35,86 @@ export default function AssetAllocation() {
   const selectedAsset = assets.find(a => a.id === selectedAssetId);
   const isConflict = selectedAsset && selectedAsset.status !== 'Available';
 
-  const handleAllocateSubmit = (e) => {
+  const handleAllocateSubmit = async (e) => {
     e.preventDefault();
     if (!selectedAssetId || !targetEmployeeEmail) return;
 
-    const result = allocateAsset(selectedAssetId, targetEmployeeEmail, expectedReturnDate, user);
-    if (result.success) {
-      // Clear forms
+    const result = await allocateAsset(selectedAssetId, targetEmployeeEmail, expectedReturnDate, user);
+    if (result && result.success) {
       setSelectedAssetId('');
       setTargetEmployeeEmail('');
       setExpectedReturnDate('');
+      alert('Asset allocated successfully!');
     } else {
-      alert(result.message);
+      alert(result?.message || 'Failed to allocate asset');
     }
   };
 
-  const handleTransferSubmit = (e) => {
+  const handleTransferSubmit = async (e) => {
     e.preventDefault();
     if (!selectedAssetId || !targetEmployeeEmail || !transferReason) return;
 
-    const result = requestTransfer(selectedAssetId, targetEmployeeEmail, transferReason, user);
-    if (result.success) {
+    const result = await requestTransfer(selectedAssetId, targetEmployeeEmail, transferReason, user);
+    if (result && result.success) {
       setSelectedAssetId('');
       setTargetEmployeeEmail('');
       setTransferReason('');
       alert('Transfer request submitted successfully. Awaiting Manager/Department Head approval.');
+    } else {
+      alert(result?.message || 'Failed to submit transfer request');
     }
   };
 
-  const handleReturnSubmit = (e) => {
+  const handleReturnSubmit = async (e) => {
     e.preventDefault();
     if (!returnAssetId) return;
 
-    returnAsset(returnAssetId, returnNotes, returnCondition, user);
-    setShowReturnModal(false);
-    setReturnAssetId('');
-    setReturnNotes('');
+    const result = await returnAsset(returnAssetId, returnNotes, returnCondition, user);
+    if (result && result.success) {
+      setShowReturnModal(false);
+      setReturnAssetId('');
+      setReturnNotes('');
+      alert('Asset return check-in completed successfully!');
+    } else {
+      alert(result?.message || 'Failed to process return');
+    }
   };
 
   // Check if current user is manager or dept head
   const isApprover = user.role === 'Asset Manager' || user.role === 'Department Head' || user.role === 'Admin';
+
+  // CHAIN OF CUSTODY HIERARCHY RULES:
+  // - Asset Manager: Can ONLY allocate assets to Department Heads
+  // - Department Head: Can ONLY allocate assets to employees within their respective department
+  // - Admin: Can allocate to any active employee across the organization
+  const eligibleRecipients = employees.filter(emp => {
+    if (emp.status !== 'Active') return false;
+    if (emp.email === (selectedAsset?.currentHolderEmail || '')) return false;
+
+    if (user.role === 'Asset Manager') {
+      return emp.role === 'Department Head';
+    }
+    if (user.role === 'Department Head') {
+      return emp.department === user.department && emp.email !== user.email;
+    }
+    return true; // Admin can allocate to anyone
+  });
+
+  const recipientLabelText =
+    user.role === 'Asset Manager'
+      ? 'Assign To (Department Heads Only)'
+      : user.role === 'Department Head'
+      ? `Assign To (${user.department} Employees Only)`
+      : 'Assign To (Employee Email)';
+
+  const selectableAssets =
+    user.role === 'Department Head'
+      ? assets.filter(a =>
+          (a.currentHolderEmail && a.currentHolderEmail.toLowerCase() === (user.email || '').toLowerCase()) ||
+          (a.currentHolder && a.currentHolder.toLowerCase() === (user.name || '').toLowerCase()) ||
+          a.status === 'Available'
+        )
+      : assets;
 
   // Get active allocations to display in returns section
   const allocatedAssets = assets.filter(a => a.status === 'Allocated');
@@ -109,7 +149,7 @@ export default function AssetAllocation() {
                 onChange={(e) => setSelectedAssetId(e.target.value)}
               >
                 <option value="">Select an asset...</option>
-                {assets.map((ast) => (
+                {selectableAssets.map((ast) => (
                   <option key={ast.id} value={ast.id}>
                     {ast.tag} - {ast.name} ({ast.status})
                   </option>
@@ -146,7 +186,7 @@ export default function AssetAllocation() {
 
             {/* Step 2: Select Target Recipient */}
             <div className="form-group">
-              <label className="form-label">Assign To (Employee Email)</label>
+              <label className="form-label">{recipientLabelText}</label>
               <select
                 className="form-input"
                 required
@@ -154,13 +194,11 @@ export default function AssetAllocation() {
                 onChange={(e) => setTargetEmployeeEmail(e.target.value)}
               >
                 <option value="">Select target recipient...</option>
-                {employees
-                  .filter(e => e.status === 'Active' && e.email !== (selectedAsset?.currentHolderEmail || ''))
-                  .map((emp) => (
-                    <option key={emp.email} value={emp.email}>
-                      {emp.name} ({emp.department} - {emp.role})
-                    </option>
-                  ))}
+                {eligibleRecipients.map((emp) => (
+                  <option key={emp.email} value={emp.email}>
+                    {emp.name} ({emp.department} - {emp.role})
+                  </option>
+                ))}
               </select>
             </div>
 
