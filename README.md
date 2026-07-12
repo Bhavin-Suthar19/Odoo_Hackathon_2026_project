@@ -97,3 +97,16 @@ npm run dev
    - Registers/authenticates user in Supabase (or fallback local session if Supabase keys are not set up yet).
    - Issues a secure HTTP-only cookie (`auth_token`) so credentials stay safe from XSS.
 3. **Session Check**: Frontend calls `/api/auth/me` on load to check if the session cookie is valid.
+
+
+AssetFlow – Smart Asset Management System
+
+Project Overview : - 
+AssetFlow is a web-based asset management platform that helps organizations manage physical assets throughout their lifecycle. It enables administrators, managers, custodians, and employees to track assets, assign ownership, monitor maintenance, generate reports, and maintain a complete audit history.
+
+Technology Stack : - 
+Frontend: React 18 + Vite + Axios
+Backend: Node.js + Express.js
+Database: Supabase PostgreSQL
+Authentication: Supabase Auth + HTTP-only Cookies
+Styling: CSS / Tailwind / Glassmorphism (your choice)
