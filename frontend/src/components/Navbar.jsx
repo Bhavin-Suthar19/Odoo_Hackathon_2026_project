@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
+import { Network, LogOut, ShieldAlert, ShieldCheck, User, Sun, Moon } from 'lucide-react';
 
-export default function Navbar({ currentTab, setCurrentTab }) {
+export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
   const { user, logout, impersonate } = useAuth();
   const [isLight, setIsLight] = useState(
     () => localStorage.getItem('af_theme') === 'light'
@@ -26,7 +26,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'var(--bg-navbar)',
+        backgroundColor: 'var(--bg-header)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-glass)',
         padding: '0.8rem 1.5rem',
@@ -122,19 +122,23 @@ export default function Navbar({ currentTab, setCurrentTab }) {
 
         {/* User Session Profile & Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* Theme Toggle Button */}
           <button
-            onClick={() => setIsLight(!isLight)}
-            title={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             className="btn btn-secondary"
+            title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}
             style={{
-              padding: '0.4rem 0.65rem',
-              fontSize: '0.8rem',
+              padding: '0.45rem 0.65rem',
               borderRadius: '10px',
               display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
             }}
           >
-            {isLight ? <Moon size={16} /> : <Sun size={16} />}
+            {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
           </button>
+
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div

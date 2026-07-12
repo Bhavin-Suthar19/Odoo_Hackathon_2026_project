@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import Navbar from './components/Navbar';
@@ -31,12 +31,26 @@ function AppContent() {
   const { user } = useAuth();
   const [currentTab, setCurrentTab] = useState('dashboard');
 
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('af_theme');
+    return saved || 'dark';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('af_theme', theme);
+    if (theme === 'light') {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+  }, [theme]);
+
   // If user is not authenticated, render Login/Signup screens
   if (!user) {
     if (currentTab === 'signup') {
       return (
         <div className="app-container">
-          <Navbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+          <Navbar theme={theme} setTheme={setTheme} currentTab={currentTab} setCurrentTab={setCurrentTab} />
           <main className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Signup setCurrentTab={setCurrentTab} />
           </main>
@@ -45,7 +59,7 @@ function AppContent() {
     }
     return (
       <div className="app-container">
-        <Navbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+        <Navbar theme={theme} setTheme={setTheme} currentTab={currentTab} setCurrentTab={setCurrentTab} />
         <main className="main-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Login setCurrentTab={setCurrentTab} />
         </main>
@@ -70,7 +84,7 @@ function AppContent() {
 
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+      <Navbar theme={theme} setTheme={setTheme} currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
       <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
         {/* Sidebar Navigation */}
