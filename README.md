@@ -1,99 +1,311 @@
-# 🚀 Hackathon Full-Stack Starter Base (React + Express + Cloud Supabase)
+# AssetFlow — Enterprise Asset & Resource Management
 
-Welcome team! This repository is carefully structured so that **4 developers** (e.g., 2 Frontend Devs + 2 Backend Devs) can instantly start building in parallel with **zero friction** and clean **separation of concerns**.
-
----
-
-## 🏗️ Architecture & Stack Overview
-
-- **Frontend (`/frontend`)**: React 18 + Vite + Modern Glassmorphic CSS + Axios (Port `5173`)
-- **Backend (`/backend`)**: Node.js + Express 4 + REST APIs + Cookies/Sessions (Port `5000`)
-- **Database & Auth**: **Cloud Supabase** (PostgreSQL + Supabase Auth SDK)
-
-```
-d:\hackothon_odoo\
-├── backend/                   # BACKEND WORKSPACE (Port 5000)
-│   ├── config/supabase.js     # Cloud Supabase connection client
-│   ├── controllers/           # Business rules, Supabase DB calls, API response logic
-│   ├── routes/                # API endpoints (/api/auth, /api/health, etc.)
-│   ├── middleware/            # Auth/Cookie checks & global error handler
-│   └── server.js              # Express app entrypoint & CORS/Cookie setup
-└── frontend/                  # FRONTEND WORKSPACE (Port 5173)
-    └── src/
-        ├── api/               # API clients calling Backend Port 5000
-        ├── context/           # Global Auth/Session context
-        ├── components/        # Reusable UI components
-        └── pages/             # Login, Signup, Dashboard pages
-```
+A full-stack ERP-style portal for managing organizational assets, allocations, bookings, maintenance, and audits. Built for **Odoo Hackathon 2026** with a React frontend, Express backend, and Supabase (PostgreSQL) as the cloud database.
 
 ---
 
-## ⚡ Quick Start (How to Run the Entire App)
+## Features
 
-### 1. Install Dependencies for Both Workspaces
-From the root directory (`d:\hackothon_odoo`), run:
+| Module | Description |
+|--------|-------------|
+| **Dashboard** | KPI overview, overdue return alerts, quick actions, and recent activity |
+| **Organization Setup** | Manage departments, asset categories, and employee directory (Admin only) |
+| **Asset Directory** | Create, update, and browse assets with tags, specs, location, and status |
+| **Allocation & Transfer** | Allocate/return assets and request or approve inter-user transfers |
+| **Resource Booking** | Book shared resources (rooms, equipment) with time slots |
+| **Maintenance** | Raise and track maintenance requests with priority and status |
+| **Asset Audit** | Run audit cycles with checklists and discrepancy reporting |
+| **Reports & Analytics** | Role-based reporting and analytics views |
+| **Activity Logs** | System-wide audit trail of user actions |
+
+### Role-Based Access
+
+| Role | Access |
+|------|--------|
+| **Admin** | Full access including Organization Setup |
+| **Asset Manager** | Assets, allocation, booking, maintenance, audit, reports |
+| **Department Head** | Same as Asset Manager |
+| **Employee** | Dashboard, assets, allocation, booking, maintenance, audit |
+
+---
+
+## Tech Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React 18, Vite, Axios, Lucide React, CSS (glassmorphic UI) |
+| **Backend** | Node.js, Express 4, bcryptjs, cookie-parser, morgan |
+| **Database** | Supabase (PostgreSQL) via `@supabase/supabase-js` |
+| **Auth** | HTTP-only session cookies + bcrypt password hashing |
+
+**Ports**
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000/api`
+
+---
+
+## Project Structure
+
+```
+Odoo_Hackathon_2026_project/
+├── backend/                        # Express REST API (port 5000)
+│   ├── config/supabase.js          # Supabase client configuration
+│   ├── controllers/
+│   │   ├── authController.js       # Register, login, logout, session
+│   │   └── erpController.js        # All ERP business logic
+│   ├── middleware/
+│   │   ├── authMiddleware.js       # Cookie/session validation
+│   │   └── errorHandler.js         # Global error handler
+│   ├── routes/
+│   │   ├── authRoutes.js           # /api/auth/*
+│   │   ├── erpRoutes.js            # /api/erp/*
+│   │   └── healthRoutes.js         # /api/health
+│   ├── sql/
+│   │   ├── schema.sql              # Full database schema
+│   │   ├── add_password_hash.sql   # Auth migration
+│   │   └── add_password_column.sql # Auth migration
+│   ├── .env.example                # Environment variable template
+│   └── server.js                   # Express entry point
+│
+├── frontend/                       # React SPA (port 5173)
+│   └── src/
+│       ├── api/                    # Axios client & auth API helpers
+│       ├── components/             # Navbar, Modal, StatusCard, etc.
+│       ├── context/                # AuthContext, DataContext
+│       └── pages/                  # Dashboard, Assets, Booking, Audit, etc.
+│
+├── package.json                    # Root scripts (run both apps together)
+└── README.md
+```
+
+---
+
+## Prerequisites
+
+- **Node.js** 18+ and **npm**
+- A free [Supabase](https://supabase.com) cloud project
+
+---
+
+## Quick Start
+
+### 1. Clone and install dependencies
+
+From the project root (`Odoo_Hackathon_2026_project/`):
+
 ```bash
 npm run install:all
 ```
-*(Or install manually inside `/backend` and `/frontend` using `npm install`)*
 
-### 2. Configure Cloud Supabase Credentials
-1. Go to [https://supabase.com](https://supabase.com) and create a free Cloud Project.
-2. Open `backend/.env.example`, copy it to `backend/.env`, and add your **Project URL** and **Anon / Service Role Key**:
-   ```env
-   PORT=5000
-   SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_ANON_KEY=your-anon-or-service-role-key
-   SESSION_SECRET=super_secret_hackathon_key_2026
-   FRONTEND_URL=http://localhost:5173
+Or install each workspace manually:
+
+```bash
+npm install
+cd backend && npm install
+cd ../frontend && npm install
+```
+
+### 2. Set up Supabase database
+
+1. Create a project at [https://supabase.com](https://supabase.com).
+2. Open **SQL Editor** in the Supabase dashboard.
+3. Run the schema script:
+
+   ```
+   backend/sql/schema.sql
    ```
 
-### 3. Start Both Frontend & Backend Concurrently
-From the root directory (`d:\hackothon_odoo`), run:
+4. Run the auth migration scripts (in order):
+
+   ```
+   backend/sql/add_password_hash.sql
+   backend/sql/add_password_column.sql
+   ```
+
+### 3. Configure environment variables
+
+Copy the example env file and fill in your Supabase credentials:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Edit `backend/.env`:
+
+```env
+PORT=5000
+FRONTEND_URL=http://localhost:5173
+
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-or-service-role-key
+
+SESSION_SECRET=hackathon_super_secret_session_key_2026
+```
+
+> Get `SUPABASE_URL` and `SUPABASE_ANON_KEY` from **Project Settings → API** in the Supabase dashboard.
+
+### 4. Run the application
+
+**Run frontend and backend together (recommended):**
+
 ```bash
 npm run dev
 ```
-- **Frontend URL**: [http://localhost:5173](http://localhost:5173)
-- **Backend API Base**: [http://localhost:5000/api](http://localhost:5000/api)
+
+**Run backend only:**
+
+```bash
+cd backend
+npm run dev        # development (auto-restart on file changes)
+# or
+npm start          # production-style
+```
+
+**Run frontend only:**
+
+```bash
+cd frontend
+npm run dev
+```
+
+### 5. Verify it works
+
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend health check: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+- API root: [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## 👥 How the Team Should Work (Separation of Concerns)
+## API Reference
 
-### 🎨 Frontend Developers (`/frontend`)
-- **Where to work**: Add new UI pages inside `frontend/src/pages/` and reusable components inside `frontend/src/components/`.
-- **Calling Backend APIs**: 
-  - Use `apiClient` defined in `frontend/src/api/client.js`.
-  - It automatically points to `http://localhost:5000/api` and includes secure HTTP-only cookies (`withCredentials: true`).
-  - Example:
-    ```javascript
-    import apiClient from '../api/client';
-    
-    // Call backend endpoint
-    const response = await apiClient.get('/your-new-feature');
-    ```
+### Health
 
-### ⚙️ Backend Developers (`/backend`)
-- **Where to work**:
-  1. Define a route in `backend/routes/`.
-  2. Write the controller logic in `backend/controllers/` (apply business rules, query Supabase database, and return JSON response).
-- **Using Cloud Supabase**:
-  - Import `supabase` from `../config/supabase.js`:
-    ```javascript
-    const supabase = require('../config/supabase');
-    
-    // Query a Supabase PostgreSQL table
-    const { data, error } = await supabase.from('your_table').select('*');
-    ```
-- **Cookies & Sessions**:
-  - `authController.js` demonstrates how secure HTTP-only cookies and session tokens are set when a user logs in or signs up.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Server status and Supabase connection check |
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/register` | Register a new employee |
+| `POST` | `/api/auth/login` | Login with email and password |
+| `POST` | `/api/auth/logout` | Clear session cookie |
+| `GET` | `/api/auth/me` | Get current session user (protected) |
+| `POST` | `/api/auth/impersonate` | Switch to a demo user (testing) |
+
+### ERP
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/erp/data` | Fetch all master data (departments, assets, bookings, etc.) |
+| `POST` | `/api/erp/departments` | Create department |
+| `PUT` | `/api/erp/departments/:id` | Update department |
+| `PUT` | `/api/erp/departments/:id/toggle` | Toggle department status |
+| `POST` | `/api/erp/categories` | Create asset category |
+| `PUT` | `/api/erp/categories/:id` | Update category |
+| `POST` | `/api/erp/employees` | Create employee |
+| `PUT` | `/api/erp/employees/role` | Update employee role |
+| `PUT` | `/api/erp/employees/:email/toggle` | Toggle employee status |
+| `POST` | `/api/erp/assets` | Create asset |
+| `PUT` | `/api/erp/assets/:id` | Update asset |
+| `POST` | `/api/erp/assets/:id/allocate` | Allocate asset to user |
+| `POST` | `/api/erp/assets/:id/return` | Return allocated asset |
+| `POST` | `/api/erp/transfers` | Request asset transfer |
+| `PUT` | `/api/erp/transfers/:id/approve` | Approve transfer |
+| `PUT` | `/api/erp/transfers/:id/reject` | Reject transfer |
+| `POST` | `/api/erp/bookings` | Book a shared resource |
+| `PUT` | `/api/erp/bookings/:id/cancel` | Cancel booking |
+| `POST` | `/api/erp/maintenances` | Raise maintenance request |
+| `PUT` | `/api/erp/maintenances/:id/status` | Update maintenance status |
+| `POST` | `/api/erp/audits` | Create audit cycle |
+| `PUT` | `/api/erp/audits/:id/checklist` | Update audit checklist |
+| `PUT` | `/api/erp/audits/:id/close` | Close audit cycle |
 
 ---
 
-## 💡 Notes on How Authentication Works (Demo Included)
-1. **Signup/Login**: Frontend submits email & password to `/api/auth/register` or `/api/auth/login`.
-2. **Backend Processing**:
-   - Validates input.
-   - Registers/authenticates user in Supabase (or fallback local session if Supabase keys are not set up yet).
-   - Issues a secure HTTP-only cookie (`auth_token`) so credentials stay safe from XSS.
-3. **Session Check**: Frontend calls `/api/auth/me` on load to check if the session cookie is valid.
+## Database Schema
+
+The Supabase PostgreSQL schema includes 11 tables:
+
+| Table | Purpose |
+|-------|---------|
+| `departments` | Organizational departments |
+| `asset_categories` | Asset type definitions with custom fields |
+| `employees` | User directory with roles and auth credentials |
+| `assets` | Asset inventory with status, location, and holder |
+| `asset_history` | Per-asset change history |
+| `asset_transfers` | Inter-user transfer requests |
+| `resource_bookings` | Shared resource time-slot bookings |
+| `maintenance_requests` | Maintenance tickets |
+| `audit_cycles` | Audit campaigns with checklists |
+| `notifications` | In-app notifications |
+| `activity_logs` | System-wide action audit trail |
+
+Full DDL is in `backend/sql/schema.sql`.
+
+---
+
+## Authentication Flow
+
+1. **Register / Login** — Frontend sends credentials to `/api/auth/register` or `/api/auth/login`.
+2. **Backend** — Validates input, checks the `employees` table in Supabase, verifies bcrypt password hash, and sets an HTTP-only cookie (`hackathon_session`).
+3. **Session check** — On app load, the frontend calls `/api/auth/me` to restore the session.
+4. **Logout** — Clears the session cookie via `/api/auth/logout`.
+
+Cookies are sent automatically because the Axios client uses `withCredentials: true`.
+
+---
+
+## Development Guide
+
+### Frontend developers (`/frontend`)
+
+- Add pages in `frontend/src/pages/`
+- Add reusable UI in `frontend/src/components/`
+- Use the shared API client for all backend calls:
+
+```javascript
+import apiClient from '../api/client';
+
+const response = await apiClient.get('/erp/data');
+```
+
+### Backend developers (`/backend`)
+
+1. Define routes in `backend/routes/`
+2. Implement logic in `backend/controllers/`
+3. Query Supabase via the shared client:
+
+```javascript
+const { supabase } = require('../config/supabase');
+
+const { data, error } = await supabase.from('assets').select('*');
+```
+
+### Available npm scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run install:all` | Install root, backend, and frontend dependencies |
+| `npm run dev` | Start backend + frontend concurrently |
+| `npm run dev:backend` | Start backend only (with file watch) |
+| `npm run dev:frontend` | Start frontend only |
+| `cd backend && npm start` | Start backend (no watch) |
+| `cd frontend && npm run build` | Build frontend for production |
+| `cd frontend && npm run preview` | Preview production build |
+
+---
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| `Cloud Supabase database not configured` | Fill in `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `backend/.env` |
+| `Route not found` | Ensure backend is running on port 5000 |
+| CORS / cookie issues | Confirm `FRONTEND_URL` matches your frontend origin (`http://localhost:5173`) |
+| Login fails after signup | Run `add_password_hash.sql` and `add_password_column.sql` in Supabase |
+| Empty dashboard data | Run `schema.sql` and verify Supabase tables exist |
+
+
