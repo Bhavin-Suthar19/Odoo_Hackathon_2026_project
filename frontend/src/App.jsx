@@ -63,7 +63,6 @@ function AppContent() {
     { id: 'maintenance', label: 'Maintenance', icon: Wrench, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'audit', label: 'Audit', icon: ClipboardCheck, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'reports', label: 'Reports', icon: BarChart3, roles: ['Admin', 'Asset Manager', 'Department Head'] },
-    { id: 'activity', label: 'Notifications & Logs', icon: Bell, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
   ];
 
   const visibleItems = navigationItems.filter(item => item.roles.includes(user.role));

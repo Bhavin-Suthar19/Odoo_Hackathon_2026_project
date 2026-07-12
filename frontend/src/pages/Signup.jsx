@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, ArrowRight, AlertCircle, Building } from 'lucide-react';
 
 export default function Signup({ setCurrentTab }) {
   const { signup, error } = useAuth();
-  const [name, setName] = useState('Hackathon Developer');
-  const [email, setEmail] = useState('dev' + Math.floor(Math.random() * 1000) + '@team.dev');
-  const [password, setPassword] = useState('supersecret');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [department, setDepartment] = useState('Engineering');
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState(null);
 
@@ -15,7 +16,13 @@ export default function Signup({ setCurrentTab }) {
     setSubmitting(true);
     setLocalError(null);
 
-    const result = await signup(name, email, password);
+    if (password.length < 6) {
+      setLocalError('Password must be at least 6 characters.');
+      setSubmitting(false);
+      return;
+    }
+
+    const result = await signup(name, email, password, department);
     setSubmitting(false);
 
     if (result.success) {
@@ -30,6 +37,7 @@ export default function Signup({ setCurrentTab }) {
       style={{
         maxWidth: '460px',
         margin: '2rem auto',
+        animation: 'fadeIn 0.3s ease',
       }}
     >
       <div className="glass-panel" style={{ padding: '2.5rem' }}>
@@ -50,10 +58,10 @@ export default function Signup({ setCurrentTab }) {
             <UserPlus size={26} color="#fff" />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
-            Create <span className="heading-gradient">Team Account</span>
+            Create <span className="heading-gradient">Employee Account</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-            Register to test Cloud Supabase & Cookie session creation
+            New employees register here. Roles can be promoted by Admin.
           </p>
         </div>
 
@@ -79,53 +87,60 @@ export default function Signup({ setCurrentTab }) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Full Name / Team Role</label>
+            <label className="form-label">Full Name</label>
             <div style={{ position: 'relative' }}>
-              <User
-                size={18}
-                color="var(--text-muted)"
-                style={{ position: 'absolute', top: '15px', left: '14px' }}
-              />
+              <User size={18} color="var(--text-muted)" style={{ position: 'absolute', top: '15px', left: '14px' }} />
               <input
                 type="text"
                 className="form-input"
                 style={{ paddingLeft: '2.8rem' }}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Alex - Lead Backend"
+                placeholder="John Doe"
                 required
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">Work Email Address</label>
             <div style={{ position: 'relative' }}>
-              <Mail
-                size={18}
-                color="var(--text-muted)"
-                style={{ position: 'absolute', top: '15px', left: '14px' }}
-              />
+              <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', top: '15px', left: '14px' }} />
               <input
                 type="email"
                 className="form-input"
                 style={{ paddingLeft: '2.8rem' }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="alex@hackathon.dev"
+                placeholder="john.doe@company.com"
                 required
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label">Department</label>
             <div style={{ position: 'relative' }}>
-              <Lock
-                size={18}
-                color="var(--text-muted)"
-                style={{ position: 'absolute', top: '15px', left: '14px' }}
-              />
+              <Building size={18} color="var(--text-muted)" style={{ position: 'absolute', top: '15px', left: '14px' }} />
+              <select
+                className="form-input"
+                style={{ paddingLeft: '2.8rem' }}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              >
+                <option value="Engineering">Engineering</option>
+                <option value="Operations">Operations</option>
+                <option value="HR">HR</option>
+                <option value="Sales">Sales</option>
+                <option value="Finance">Finance</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Password (min. 6 characters)</label>
+            <div style={{ position: 'relative' }}>
+              <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', top: '15px', left: '14px' }} />
               <input
                 type="password"
                 className="form-input"
@@ -134,17 +149,32 @@ export default function Signup({ setCurrentTab }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
             </div>
+          </div>
+
+          <div
+            style={{
+              background: 'rgba(139, 92, 246, 0.08)',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              borderRadius: '10px',
+              padding: '0.65rem 0.85rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.78rem',
+              color: '#c4b5fd',
+            }}
+          >
+            ℹ️ All new registrations start with <strong>Employee</strong> role. Only an Admin can promote accounts to Asset Manager, Department Head, or Admin.
           </div>
 
           <button
             type="submit"
             disabled={submitting}
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem', padding: '0.9rem' }}
+            style={{ width: '100%', padding: '0.9rem' }}
           >
-            {submitting ? 'Registering...' : 'Create Account & Start'}
+            {submitting ? 'Creating Account...' : 'Register Employee Account'}
             <ArrowRight size={18} />
           </button>
         </form>

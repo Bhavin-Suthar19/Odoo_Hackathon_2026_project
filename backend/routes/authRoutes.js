@@ -1,11 +1,3 @@
-/**
- * ============================================================================
- * AUTHENTICATION API ROUTES (/api/auth)
- * ============================================================================
- * Backend developers can add more user-related endpoints here.
- * ============================================================================
- */
-
 const express = require('express');
 const router = express.Router();
 const {
@@ -13,6 +5,7 @@ const {
   loginUser,
   getMe,
   logoutUser,
+  impersonateUser,
 } = require('../controllers/authController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
@@ -20,8 +13,9 @@ const { requireAuth } = require('../middleware/authMiddleware');
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
+router.post('/impersonate', impersonateUser);
 
-// Protected endpoints (Requires valid HTTP-only session cookie)
+// Protected endpoints
 router.get('/me', requireAuth, getMe);
 
 module.exports = router;

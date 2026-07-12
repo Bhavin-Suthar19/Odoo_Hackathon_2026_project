@@ -63,7 +63,6 @@ const getErpData = async (req, res, next) => {
       supabase.from('activity_logs').select('*').order('created_at', { ascending: false })
     ]);
 
-    // Format DB snake_case columns to camelCase expected by frontend cleanly
     const formattedAssets = (assets.data || []).map(a => ({
       ...a,
       acquisitionDate: a.acquisition_date,
@@ -148,7 +147,7 @@ const getErpData = async (req, res, next) => {
 };
 
 /**
- * @desc    Create Department in Supabase
+ * @desc    Create Department
  */
 const createDepartment = async (req, res, next) => {
   try {
@@ -171,7 +170,50 @@ const createDepartment = async (req, res, next) => {
 };
 
 /**
- * @desc    Create Asset Category in Supabase
+ * @desc    Update Department
+ */
+const updateDepartment = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, head, headEmail, parent, actor } = req.body;
+    const updateObj = {};
+    if (name !== undefined) updateObj.name = name;
+    if (head !== undefined) updateObj.head = head;
+    if (headEmail !== undefined) updateObj.head_email = headEmail;
+    if (parent !== undefined) updateObj.parent = parent;
+
+    const { data, error } = await supabase.from('departments')
+      .update(updateObj).eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Department Updated', `Updated department ${name || id}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Toggle Department Status
+ */
+const toggleDepartmentStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { actor } = req.body;
+
+    const { data: dept } = await supabase.from('departments').select('status').eq('id', id).single();
+    if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
+
+    const newStatus = dept.status === 'Active' ? 'Inactive' : 'Active';
+    const { data, error } = await supabase.from('departments')
+      .update({ status: newStatus }).eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Department Status Toggled', `Toggled department ${id} to ${newStatus}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Create Category
  */
 const createCategory = async (req, res, next) => {
   try {
@@ -191,14 +233,34 @@ const createCategory = async (req, res, next) => {
 };
 
 /**
- * @desc    Create Employee in Supabase
+ * @desc    Update Category
+ */
+const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, fields, actor } = req.body;
+    const updateObj = {};
+    if (name !== undefined) updateObj.name = name;
+    if (fields !== undefined) updateObj.fields = fields;
+
+    const { data, error } = await supabase.from('asset_categories')
+      .update(updateObj).eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Category Updated', `Updated category ${name || id}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Create Employee
  */
 const createEmployee = async (req, res, next) => {
   try {
     const { name, email, role, department, actor } = req.body;
     const { data, error } = await supabase.from('employees').insert([{
       name,
-      email: email.toLowerCase(),
+      email: email.toLowerCase().trim(),
       role: role || 'Employee',
       department: department || 'Engineering',
       status: 'Active'
@@ -214,14 +276,14 @@ const createEmployee = async (req, res, next) => {
 };
 
 /**
- * @desc    Update Employee Role in Supabase
+ * @desc    Update Employee Role
  */
 const updateEmployeeRole = async (req, res, next) => {
   try {
     const { email, role, actor } = req.body;
     const { data, error } = await supabase.from('employees')
       .update({ role })
-      .eq('email', email.toLowerCase())
+      .eq('email', email.toLowerCase().trim())
       .select().single();
 
     if (error) return res.status(400).json({ success: false, message: error.message });
@@ -234,13 +296,33 @@ const updateEmployeeRole = async (req, res, next) => {
 };
 
 /**
- * @desc    Create Asset in Supabase
+ * @desc    Toggle Employee Status
+ */
+const toggleEmployeeStatus = async (req, res, next) => {
+  try {
+    const { email } = req.params;
+    const { actor } = req.body;
+
+    const { data: emp } = await supabase.from('employees').select('status, name').eq('email', email).single();
+    if (!emp) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    const newStatus = emp.status === 'Active' ? 'Inactive' : 'Active';
+    const { data, error } = await supabase.from('employees')
+      .update({ status: newStatus }).eq('email', email).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Employee Status Changed', `Set ${emp.name} to ${newStatus}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Create Asset
  */
 const createAsset = async (req, res, next) => {
   try {
     const { name, category, serial, acquisitionCost, acquisitionDate, condition, location, shared, specs, actor } = req.body;
 
-    // Generate next tag automatically
     const { data: existingAssets } = await supabase.from('assets').select('tag');
     let maxNum = 0;
     if (existingAssets) {
@@ -276,32 +358,61 @@ const createAsset = async (req, res, next) => {
 };
 
 /**
- * @desc    Allocate Asset in Supabase
+ * @desc    Update Asset
  */
-const allocateAsset = async (req, res, next) => {
+const updateAsset = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { employeeEmail, employeeName, expectedReturnDate, actor } = req.body;
-
-    const { data: asset, error: fetchErr } = await supabase.from('assets').select('*').eq('id', id).single();
-    if (fetchErr || !asset) return res.status(404).json({ success: false, message: 'Asset not found' });
-
-    if (asset.status !== 'Available' && asset.status !== 'Reserved') {
-      return res.status(400).json({
-        success: false,
-        message: `Asset is already held by ${asset.current_holder || 'someone else'}. Transfer request required.`
-      });
-    }
+    const { actor, ...fields } = req.body;
+    const updateObj = {};
+    if (fields.name !== undefined) updateObj.name = fields.name;
+    if (fields.condition !== undefined) updateObj.condition = fields.condition;
+    if (fields.location !== undefined) updateObj.location = fields.location;
+    if (fields.status !== undefined) updateObj.status = fields.status;
+    if (fields.shared !== undefined) updateObj.shared = fields.shared;
+    if (fields.specs !== undefined) updateObj.specs = fields.specs;
 
     const { data, error } = await supabase.from('assets')
-      .update({
-        status: 'Allocated',
-        current_holder: employeeName,
-        current_holder_email: employeeEmail,
-        expected_return_date: expectedReturnDate || null
-      })
-      .eq('id', id)
-      .select().single();
+      .update(updateObj).eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Asset Updated', `Updated asset ${id}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Allocate Asset
+ */
+  const allocateAsset = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { employeeEmail, employeeName, expectedReturnDate, actor } = req.body;
+
+      const { data: asset, error: fetchErr } = await supabase.from('assets').select('*').eq('id', id).single();
+      if (fetchErr || !asset) return res.status(404).json({ success: false, message: 'Asset not found' });
+
+      const isHolderOrAdmin =
+        (actor && actor.email && asset.current_holder_email &&
+         actor.email.toLowerCase() === asset.current_holder_email.toLowerCase()) ||
+        (actor && actor.role === 'Admin');
+
+      if (asset.status !== 'Available' && asset.status !== 'Reserved' && !isHolderOrAdmin) {
+        return res.status(400).json({
+          success: false,
+          message: `Asset is already held by ${asset.current_holder || 'someone else'}. Transfer request required.`
+        });
+      }
+
+      const { data, error } = await supabase.from('assets')
+        .update({
+          status: 'Allocated',
+          current_holder: employeeName,
+          current_holder_email: employeeEmail,
+          expected_return_date: expectedReturnDate || null
+        })
+        .eq('id', id)
+        .select().single();
 
     if (error) return res.status(400).json({ success: false, message: error.message });
 
@@ -319,7 +430,7 @@ const allocateAsset = async (req, res, next) => {
 };
 
 /**
- * @desc    Return Asset in Supabase
+ * @desc    Return Asset
  */
 const returnAsset = async (req, res, next) => {
   try {
@@ -358,7 +469,7 @@ const returnAsset = async (req, res, next) => {
 };
 
 /**
- * @desc    Request Transfer in Supabase
+ * @desc    Request Transfer
  */
 const requestTransfer = async (req, res, next) => {
   try {
@@ -394,7 +505,7 @@ const requestTransfer = async (req, res, next) => {
 };
 
 /**
- * @desc    Approve Transfer in Supabase
+ * @desc    Approve Transfer
  */
 const approveTransfer = async (req, res, next) => {
   try {
@@ -404,7 +515,6 @@ const approveTransfer = async (req, res, next) => {
     const { data: transfer } = await supabase.from('asset_transfers').select('*').eq('id', id).single();
     if (!transfer) return res.status(404).json({ success: false, message: 'Transfer not found' });
 
-    // Update asset holder
     await supabase.from('assets').update({
       status: 'Allocated',
       current_holder: transfer.to_user,
@@ -412,7 +522,6 @@ const approveTransfer = async (req, res, next) => {
       expected_return_date: null
     }).eq('id', transfer.asset_id);
 
-    // Mark approved
     const { data, error } = await supabase.from('asset_transfers')
       .update({ status: 'Approved' })
       .eq('id', id)
@@ -434,7 +543,7 @@ const approveTransfer = async (req, res, next) => {
 };
 
 /**
- * @desc    Reject Transfer in Supabase
+ * @desc    Reject Transfer
  */
 const rejectTransfer = async (req, res, next) => {
   try {
@@ -456,13 +565,12 @@ const rejectTransfer = async (req, res, next) => {
 };
 
 /**
- * @desc    Book Resource in Supabase (with Overlap Validation)
+ * @desc    Book Resource
  */
 const bookResource = async (req, res, next) => {
   try {
     const { resourceId, resourceName, userName, userEmail, date, startTime, endTime, purpose, actor } = req.body;
 
-    // Check overlap
     const { data: existingBookings } = await supabase
       .from('resource_bookings')
       .select('*')
@@ -513,7 +621,7 @@ const bookResource = async (req, res, next) => {
 const cancelBooking = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { actor } = req.body;
+    const { reason, actor } = req.body;
 
     const { data, error } = await supabase.from('resource_bookings')
       .update({ status: 'Cancelled' })
@@ -522,7 +630,8 @@ const cancelBooking = async (req, res, next) => {
 
     if (error) return res.status(400).json({ success: false, message: error.message });
 
-    await insertActivityLog('Booking Cancelled', `Cancelled booking ID ${id}`, actor);
+    const detailsText = reason ? `Cancelled booking ${id} — Message to user: ${reason}` : `Cancelled booking ID ${id}`;
+    await insertActivityLog('Booking Cancelled', detailsText, actor);
     return res.status(200).json({ success: true, data });
   } catch (err) {
     next(err);
@@ -581,7 +690,6 @@ const updateMaintenance = async (req, res, next) => {
 
     if (error) return res.status(400).json({ success: false, message: error.message });
 
-    // Side effect on asset status
     if (status === 'Approved' || status === 'In Progress') {
       await supabase.from('assets').update({ status: 'Under Maintenance' }).eq('id', ticket.asset_id);
     } else if (status === 'Resolved') {
@@ -609,7 +717,6 @@ const createAudit = async (req, res, next) => {
     const { data: auditor } = await supabase.from('employees').select('*').eq('email', auditorEmail).single();
     const auditorName = auditor ? auditor.name : auditorEmail;
 
-    // Prefill checklist with assets in scope
     const { data: scopedAssets } = await supabase.from('assets')
       .select('*')
       .ilike('location', `%${scopeLocation || ''}%`);
@@ -642,13 +749,68 @@ const createAudit = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Update Audit Checklist
+ */
+const updateAuditChecklist = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { assetId, itemStatus, issueText, actor } = req.body;
+
+    const { data: audit } = await supabase.from('audit_cycles').select('checklist, discrepancy_report').eq('id', id).single();
+    if (!audit) return res.status(404).json({ success: false, message: 'Audit cycle not found' });
+
+    const newChecklist = { ...(audit.checklist || {}), [assetId]: itemStatus };
+    let discReport = audit.discrepancy_report || { flaggedCount: 0, items: [] };
+
+    if (itemStatus === 'Damaged' || itemStatus === 'Missing') {
+      const items = discReport.items || [];
+      const alreadyFlagged = items.some(i => i.assetId === assetId);
+      if (!alreadyFlagged) {
+        items.push({ assetId, issue: issueText || `Marked ${itemStatus}` });
+        discReport = { flaggedCount: items.length, items };
+      }
+    }
+
+    const { data, error } = await supabase.from('audit_cycles')
+      .update({ checklist: newChecklist, discrepancy_report: discReport })
+      .eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Audit Checklist Updated', `Updated checklist for audit ${id}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
+/**
+ * @desc    Close Audit Cycle
+ */
+const closeAuditCycle = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { actor } = req.body;
+
+    const { data, error } = await supabase.from('audit_cycles')
+      .update({ status: 'Closed' }).eq('id', id).select().single();
+    if (error) return res.status(400).json({ success: false, message: error.message });
+
+    await insertActivityLog('Audit Cycle Closed', `Closed audit cycle ${id}`, actor);
+    return res.status(200).json({ success: true, data });
+  } catch (err) { next(err); }
+};
+
 module.exports = {
   getErpData,
   createDepartment,
+  updateDepartment,
+  toggleDepartmentStatus,
   createCategory,
+  updateCategory,
   createEmployee,
   updateEmployeeRole,
+  toggleEmployeeStatus,
   createAsset,
+  updateAsset,
   allocateAsset,
   returnAsset,
   requestTransfer,
@@ -658,5 +820,7 @@ module.exports = {
   cancelBooking,
   raiseMaintenance,
   updateMaintenance,
-  createAudit
+  createAudit,
+  updateAuditChecklist,
+  closeAuditCycle
 };

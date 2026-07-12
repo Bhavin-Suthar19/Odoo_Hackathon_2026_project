@@ -1,16 +1,9 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Network, LogOut, ShieldAlert, ShieldCheck, User } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 export default function Navbar({ currentTab, setCurrentTab }) {
-  const { user, logout, impersonate } = useAuth();
-
-  const mockUsers = [
-    { name: 'Admin User', email: 'admin@company.com', role: 'Admin' },
-    { name: 'Alex Mercer', email: 'manager@company.com', role: 'Asset Manager' },
-    { name: 'Priya Shah', email: 'priya@company.com', role: 'Department Head' },
-    { name: 'Raj Patel', email: 'raj@company.com', role: 'Employee' },
-  ];
+  const { user, logout } = useAuth();
 
   return (
     <header
@@ -71,46 +64,6 @@ export default function Navbar({ currentTab, setCurrentTab }) {
           </div>
         </div>
 
-        {/* Impersonation Panel (Developer Assist) */}
-        {user && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              background: 'rgba(139, 92, 246, 0.08)',
-              border: '1px solid rgba(139, 92, 246, 0.25)',
-              padding: '0.35rem 0.8rem',
-              borderRadius: '12px',
-            }}
-          >
-            <ShieldAlert size={14} color="#a78bfa" style={{ animation: 'pulseGlow 2s infinite' }} />
-            <span style={{ fontSize: '0.75rem', color: '#c4b5fd', fontWeight: 600 }}>
-              Testing Tool (Impersonate):
-            </span>
-            <select
-              value={user.email}
-              onChange={(e) => impersonate(e.target.value)}
-              style={{
-                background: '#0f131d',
-                border: '1px solid var(--border-glass)',
-                color: 'var(--text-primary)',
-                padding: '0.2rem 0.5rem',
-                borderRadius: '8px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              {mockUsers.map((mu) => (
-                <option key={mu.email} value={mu.email}>
-                  {mu.role} ({mu.name.split(' ')[0]})
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
 
         {/* User Session Profile & Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

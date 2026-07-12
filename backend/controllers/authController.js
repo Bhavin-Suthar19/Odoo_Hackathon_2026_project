@@ -1,86 +1,115 @@
 /**
  * ============================================================================
- * AUTH CONTROLLER (Signup, Login, Session Management, Cookies & Supabase)
+ * ASSETFLOW AUTH CONTROLLER (REAL SUPABASE CLOUD POSTGRESQL INTEGRATION)
  * ============================================================================
- * Handles user registration, login, session checking, and logout.
- *
- * BUSINESS RULES & FLOW:
- * 1. Validate incoming request body (email, password, name).
- * 2. If Cloud Supabase is configured:
- *    - Calls `supabase.auth.signUp` or `supabase.auth.signInWithPassword`.
- * 3. If Cloud Supabase credentials are still placeholders in `.env`:
- *    - Demonstrates immediate session cookie creation so Frontend devs can test right away.
- * 4. Sets a secure HTTP-Only cookie named `hackathon_session`.
+ * Handles user authentication against the Supabase `employees` table.
+ * Enforces role-based permissions, bcrypt password hashing, & duplicate checks.
  * ============================================================================
  */
 
 const { supabase, isSupabaseConfigured } = require('../config/supabase');
+const bcrypt = require('bcryptjs');
 
 // Helper to set HTTP-only cookie
 const setAuthCookie = (res, userData) => {
   const cookieValue = JSON.stringify(userData);
   res.cookie('hackathon_session', cookieValue, {
-    httpOnly: true, // Prevents Javascript access (protects against XSS)
-    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    secure: false, // localhost dev
     sameSite: 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
 
 /**
- * @desc    Register a new user
+ * @desc    Register a new employee — creates entry in Supabase `employees` table
  * @route   POST /api/auth/register
  */
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, department } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide both email and password.',
-      });
+    if (!email || !password || !name) {
+      return res.status(400).json({ success: false, message: 'Name, email and password are required.' });
     }
 
-    let userObj = {
-      id: 'demo-user-' + Date.now(),
-      name: name || email.split('@')[0],
-      email: email.toLowerCase(),
-      role: 'Hackathon Developer',
-      provider: 'Local Demo Session (Configure Supabase in backend/.env)',
+    if (password.length < 6) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
+    }
+
+    if (!isSupabaseConfigured()) {
+      return res.status(500).json({ success: false, message: 'Cloud Supabase database not configured.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Check duplicate email in Supabase employees table
+    const { data: existing, error: checkError } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'This email address is already registered. Please sign in instead.' });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Attempt insert with both password_hash and password columns
+    let { data: newEmp, error } = await supabase
+      .from('employees')
+      .insert([{
+        name,
+        email: cleanEmail,
+        role: 'Employee',
+        department: department || 'Engineering',
+        status: 'Active',
+        password_hash,
+        password
+      }])
+      .select()
+      .single();
+
+    // If Supabase table does not have password column yet, fallback to password_hash only or basic insert
+    if (error && (error.message?.includes('password') || error.code === 'PGRST204')) {
+      const fallbackResult = await supabase
+        .from('employees')
+        .insert([{
+          name,
+          email: cleanEmail,
+          role: 'Employee',
+          department: department || 'Engineering',
+          status: 'Active',
+          password_hash
+        }])
+        .select()
+        .single();
+      newEmp = fallbackResult.data;
+      error = fallbackResult.error;
+    }
+
+    if (error) {
+      if (error.code === '23505') {
+        return res.status(409).json({ success: false, message: 'This email address is already registered.' });
+      }
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    const userObj = {
+      id: newEmp.id,
+      name: newEmp.name,
+      email: newEmp.email,
+      role: newEmp.role,
+      department: newEmp.department,
     };
 
-    // If Cloud Supabase is active, register user with Supabase Auth
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: name || '',
-          },
-        },
-      });
-
-      if (error) {
-        return res.status(400).json({ success: false, message: error.message });
-      }
-
-      userObj = {
-        id: data.user ? data.user.id : userObj.id,
-        name: name || email.split('@')[0],
-        email: email.toLowerCase(),
-        role: 'Authenticated Supabase User',
-        provider: 'Cloud Supabase',
-      };
-    }
-
-    // Set HTTP-Only Cookie
     setAuthCookie(res, userObj);
 
     return res.status(201).json({
       success: true,
-      message: 'Registration successful! Session cookie set.',
+      message: 'Registration successful!',
       user: userObj,
     });
   } catch (error) {
@@ -89,7 +118,7 @@ const registerUser = async (req, res, next) => {
 };
 
 /**
- * @desc    Login existing user
+ * @desc    Login user — validates against Supabase `employees` table
  * @route   POST /api/auth/login
  */
 const loginUser = async (req, res, next) => {
@@ -97,46 +126,58 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please enter your email and password.',
-      });
+      return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
-    let userObj = {
-      id: 'demo-user-888',
-      name: email.split('@')[0],
-      email: email.toLowerCase(),
-      role: 'Hackathon Team Member',
-      provider: 'Local Demo Session (Configure Supabase in backend/.env)',
+    if (!isSupabaseConfigured()) {
+      return res.status(500).json({ success: false, message: 'Cloud Supabase database not configured.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Find employee in Supabase
+    const { data: employee, error } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (error || !employee) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    }
+
+    if (employee.status === 'Inactive') {
+      return res.status(403).json({ success: false, message: 'This account has been deactivated by the Admin.' });
+    }
+
+    // Verify password against Supabase database columns (password_hash or password)
+    let isPasswordValid = false;
+    if (employee.password_hash) {
+      isPasswordValid = await bcrypt.compare(password, employee.password_hash);
+    } else if (employee.password) {
+      isPasswordValid = (employee.password === password);
+    } else {
+      // Legacy/seed account without password column filled
+      isPasswordValid = (password === 'hackathon2026');
+    }
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password.' });
+    }
+
+    const userObj = {
+      id: employee.id,
+      name: employee.name,
+      email: employee.email,
+      role: employee.role,
+      department: employee.department,
     };
 
-    // If Cloud Supabase is configured, authenticate via Supabase
-    if (isSupabaseConfigured()) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return res.status(401).json({ success: false, message: error.message });
-      }
-
-      userObj = {
-        id: data.user.id,
-        name: data.user.user_metadata?.full_name || email.split('@')[0],
-        email: data.user.email,
-        role: 'Authenticated Supabase User',
-        provider: 'Cloud Supabase',
-      };
-    }
-
-    // Set HTTP-Only Cookie
     setAuthCookie(res, userObj);
 
     return res.status(200).json({
       success: true,
-      message: 'Login successful! Welcome back.',
+      message: 'Login successful!',
       user: userObj,
     });
   } catch (error) {
@@ -145,7 +186,7 @@ const loginUser = async (req, res, next) => {
 };
 
 /**
- * @desc    Get currently logged-in user from session cookie
+ * @desc    Get currently logged-in user session
  * @route   GET /api/auth/me
  */
 const getMe = async (req, res) => {
@@ -171,9 +212,56 @@ const logoutUser = (req, res) => {
   });
 };
 
+/**
+ * @desc    Impersonate a user (Testing Tool) — looks up employee in Supabase
+ * @route   POST /api/auth/impersonate
+ */
+const impersonateUser = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required.' });
+    }
+
+    if (!isSupabaseConfigured()) {
+      return res.status(500).json({ success: false, message: 'Cloud Supabase database not configured.' });
+    }
+
+    const { data: employee, error } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    if (error || !employee) {
+      return res.status(404).json({ success: false, message: 'Employee not found.' });
+    }
+
+    const userObj = {
+      id: employee.id,
+      name: employee.name,
+      email: employee.email,
+      role: employee.role,
+      department: employee.department,
+    };
+
+    setAuthCookie(res, userObj);
+
+    return res.status(200).json({
+      success: true,
+      message: `Switched to ${employee.name} (${employee.role})`,
+      user: userObj,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
   logoutUser,
+  impersonateUser,
 };

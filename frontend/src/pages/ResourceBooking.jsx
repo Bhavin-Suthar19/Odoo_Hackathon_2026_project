@@ -23,6 +23,8 @@ export default function ResourceBooking() {
   });
 
   const [formError, setFormError] = useState('');
+  const [cancelModalBooking, setCancelModalBooking] = useState(null);
+  const [cancelMessage, setCancelMessage] = useState('');
 
   // Timeline Hour list
   const hoursList = [
@@ -38,7 +40,7 @@ export default function ResourceBooking() {
     b.status !== 'Cancelled'
   );
 
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
 
@@ -56,7 +58,7 @@ export default function ResourceBooking() {
     }
 
     // Call state engine with conflict overlap validation
-    const result = bookResource(
+    const result = await bookResource(
       resourceIdForTimeline,
       bookingForm.date,
       bookingForm.startTime,
@@ -66,7 +68,7 @@ export default function ResourceBooking() {
       user
     );
 
-    if (result.success) {
+    if (result && result.success) {
       setBookingForm({
         date: '2026-07-12',
         startTime: '09:00',
@@ -75,8 +77,16 @@ export default function ResourceBooking() {
       });
       alert('Resource booked successfully!');
     } else {
-      setFormError(result.message);
+      setFormError(result?.message || 'Failed to book resource.');
     }
+  };
+
+  const handleConfirmCancel = async (e) => {
+    e.preventDefault();
+    if (!cancelModalBooking) return;
+    await cancelBooking(cancelModalBooking.id, cancelMessage, user);
+    setCancelModalBooking(null);
+    setCancelMessage('');
   };
 
   // Find resource details
@@ -325,7 +335,10 @@ export default function ResourceBooking() {
                     <td style={{ textAlign: 'right' }}>
                       {b.status !== 'Cancelled' && (b.userEmail === user.email || user.role === 'Admin' || user.role === 'Asset Manager') ? (
                         <button
-                          onClick={() => cancelBooking(b.id, user)}
+                          onClick={() => {
+                            setCancelModalBooking(b);
+                            setCancelMessage('');
+                          }}
                           className="btn btn-secondary"
                           style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderColor: 'rgba(244, 63, 94, 0.3)', color: '#fda4af' }}
                         >
@@ -342,6 +355,73 @@ export default function ResourceBooking() {
           </table>
         </div>
       </div>
+
+      {/* Cancellation Warning & Message Modal */}
+      {cancelModalBooking && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '460px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <AlertTriangle size={22} color="#f43f5e" />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Cancel Reservation</h3>
+              </div>
+              <button
+                onClick={() => setCancelModalBooking(null)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div
+              style={{
+                background: 'rgba(244, 63, 94, 0.1)',
+                border: '1px solid rgba(244, 63, 94, 0.35)',
+                borderRadius: '10px',
+                padding: '0.85rem 1rem',
+                marginBottom: '1.25rem',
+                fontSize: '0.88rem',
+                color: '#fca5a5'
+              }}
+            >
+              Are you sure you want to cancel the reservation for{' '}
+              <strong>{cancelModalBooking.resourceName}</strong> ({cancelModalBooking.purpose}) booked by{' '}
+              <strong>{cancelModalBooking.user}</strong>?
+            </div>
+
+            <form onSubmit={handleConfirmCancel}>
+              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                <label className="form-label">Reason / Message to User (Optional)</label>
+                <textarea
+                  className="form-input"
+                  style={{ minHeight: '80px' }}
+                  placeholder="e.g. Urgent executive meeting scheduled in this space. Please reschedule."
+                  value={cancelMessage}
+                  onChange={(e) => setCancelMessage(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setCancelModalBooking(null)}
+                  className="btn btn-secondary"
+                  style={{ flex: 1 }}
+                >
+                  Keep Reservation
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ flex: 1, background: '#f43f5e', borderColor: '#f43f5e' }}
+                >
+                  Confirm Cancellation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

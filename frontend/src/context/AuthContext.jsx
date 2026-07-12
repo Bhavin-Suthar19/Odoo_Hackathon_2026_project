@@ -1,123 +1,113 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
+const AUTH_API = 'http://localhost:5000/api/auth';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Check if a session exists in localStorage on mount
+  // Check if session exists in Supabase backend on mount
   useEffect(() => {
-    const savedSession = localStorage.getItem('af_current_user');
-    if (savedSession) {
-      setUser(JSON.parse(savedSession));
-    }
-    setLoading(false);
+    const checkSession = async () => {
+      try {
+        const res = await fetch(`${AUTH_API}/me`, { credentials: 'include' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.user) {
+            setUser(json.user);
+          }
+        }
+      } catch (err) {
+        // Logged out
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkSession();
   }, []);
 
   const login = async (email, password) => {
     setError(null);
     try {
-      // Load current employees from localStorage
-      const empsSaved = localStorage.getItem('af_employees');
-      const employees = empsSaved ? JSON.parse(empsSaved) : [];
+      const res = await fetch(`${AUTH_API}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
 
-      const foundUser = employees.find((e) => e.email.toLowerCase() === email.toLowerCase());
+      const json = await res.json();
 
-      if (!foundUser) {
-        throw new Error('User not found. Try manager@company.com or priya@company.com');
+      if (!res.ok || !json.success) {
+        const msg = json.message || 'Login failed.';
+        setError(msg);
+        return { success: false, message: msg };
       }
 
-      if (foundUser.status === 'Inactive') {
-        throw new Error('This account has been deactivated by the Admin.');
-      }
-
-      // In a real app we'd verify password. For this hackathon frontend, any password works.
-      const userSession = {
-        id: foundUser.id,
-        name: foundUser.name,
-        email: foundUser.email,
-        role: foundUser.role, // 'Admin', 'Asset Manager', 'Department Head', 'Employee'
-        department: foundUser.department,
-        provider: 'Local-Mock',
-      };
-
-      setUser(userSession);
-      localStorage.setItem('af_current_user', JSON.stringify(userSession));
+      setUser(json.user);
       return { success: true };
     } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
+      const msg = 'Network error communicating with server.';
+      setError(msg);
+      return { success: false, message: msg };
     }
   };
 
-  const signup = async (name, email, password) => {
+  const signup = async (name, email, password, department) => {
     setError(null);
     try {
-      const empsSaved = localStorage.getItem('af_employees');
-      let employees = empsSaved ? JSON.parse(empsSaved) : [];
+      const res = await fetch(`${AUTH_API}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, email, password, department }),
+      });
 
-      const exists = employees.some((e) => e.email.toLowerCase() === email.toLowerCase());
-      if (exists) {
-        throw new Error('Email is already registered.');
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        const msg = json.message || 'Registration failed.';
+        setError(msg);
+        return { success: false, message: msg };
       }
 
-      // Add to employee directory in localStorage. Roles can only be assigned by Admin
-      const newEmployee = {
-        id: `emp-${Date.now()}`,
-        name,
-        email,
-        role: 'Employee', // ALWAYS creates Employee account only
-        department: 'Engineering', // Default department
-        status: 'Active',
-      };
-
-      employees.push(newEmployee);
-      localStorage.setItem('af_employees', JSON.stringify(employees));
-
-      const userSession = {
-        id: newEmployee.id,
-        name: newEmployee.name,
-        email: newEmployee.email,
-        role: newEmployee.role,
-        department: newEmployee.department,
-        provider: 'Local-Mock',
-      };
-
-      setUser(userSession);
-      localStorage.setItem('af_current_user', JSON.stringify(userSession));
+      setUser(json.user);
       return { success: true };
     } catch (err) {
-      setError(err.message);
-      return { success: false, message: err.message };
+      const msg = 'Network error communicating with server.';
+      setError(msg);
+      return { success: false, message: msg };
     }
   };
 
   const logout = async () => {
+    try {
+      await fetch(`${AUTH_API}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (e) {}
     setUser(null);
-    localStorage.removeItem('af_current_user');
   };
 
-  // Impersonate function for hackathon testers
-  const impersonate = (email) => {
-    const empsSaved = localStorage.getItem('af_employees');
-    const employees = empsSaved ? JSON.parse(empsSaved) : [];
-    const foundUser = employees.find((e) => e.email.toLowerCase() === email.toLowerCase());
+  const impersonate = async (email) => {
+    setError(null);
+    try {
+      const res = await fetch(`${AUTH_API}/impersonate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email }),
+      });
 
-    if (foundUser) {
-      const userSession = {
-        id: foundUser.id,
-        name: foundUser.name,
-        email: foundUser.email,
-        role: foundUser.role,
-        department: foundUser.department,
-        provider: 'Impersonation-Tool',
-      };
-      setUser(userSession);
-      localStorage.setItem('af_current_user', JSON.stringify(userSession));
-      // Force reload or trigger state update
-      window.location.reload();
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setUser(json.user);
+      }
+    } catch (err) {
+      console.error('Impersonate error:', err);
     }
   };
 
