@@ -65,6 +65,20 @@ export default function AssetAllocation() {
     }
   };
 
+  const handleEmployeeRequestSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedAssetId || !transferReason) return;
+
+    const result = await requestTransfer(selectedAssetId, user.email, transferReason, user);
+    if (result && result.success) {
+      setSelectedAssetId('');
+      setTransferReason('');
+      alert('Asset request submitted successfully! Awaiting Manager/Department Head approval.');
+    } else {
+      alert(result?.message || 'Failed to submit asset request');
+    }
+  };
+
   const handleReturnSubmit = async (e) => {
     e.preventDefault();
     if (!returnAssetId) return;
@@ -108,7 +122,9 @@ export default function AssetAllocation() {
       : 'Assign To (Employee Email)';
 
   const selectableAssets =
-    user.role === 'Department Head'
+    user.role === 'Employee'
+      ? assets.filter(a => a.status === 'Available')
+      : user.role === 'Department Head'
       ? assets.filter(a =>
           (a.currentHolderEmail && a.currentHolderEmail.toLowerCase() === (user.email || '').toLowerCase()) ||
           (a.currentHolder && a.currentHolder.toLowerCase() === (user.name || '').toLowerCase()) ||
@@ -135,111 +151,159 @@ export default function AssetAllocation() {
         <div className="glass-panel" style={{ padding: '1.75rem' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 850, marginBottom: '1.25rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <UserCheck size={20} color="#a78bfa" />
-            <span>Allocate Device / Request Transfer</span>
+            <span>{user.role === 'Employee' ? 'Request Available Device' : 'Allocate Device / Request Transfer'}</span>
           </h3>
 
-          <form onSubmit={isConflict ? handleTransferSubmit : handleAllocateSubmit}>
-            {/* Step 1: Select Asset */}
-            <div className="form-group">
-              <label className="form-label">Select Asset / Device</label>
-              <select
-                className="form-input"
-                required
-                value={selectedAssetId}
-                onChange={(e) => setSelectedAssetId(e.target.value)}
-              >
-                <option value="">Select an asset...</option>
-                {selectableAssets.map((ast) => (
-                  <option key={ast.id} value={ast.id}>
-                    {ast.tag} - {ast.name} ({ast.status})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Conflict Alert Check */}
-            {isConflict && (
-              <div
-                style={{
-                  background: 'rgba(244, 63, 94, 0.12)',
-                  border: '1px solid rgba(244, 63, 94, 0.35)',
-                  borderRadius: '12px',
-                  padding: '0.85rem 1.1rem',
-                  marginBottom: '1.25rem',
-                  fontSize: '0.85rem',
-                  color: 'var(--accent-rose-soft)',
-                  display: 'flex',
-                  gap: '0.6rem',
-                  alignItems: 'start',
-                }}
-              >
-                <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-                <div>
-                  <strong>Double-Allocation Blocked!</strong>
-                  <p style={{ marginTop: '0.2rem', color: 'var(--text-secondary)' }}>
-                    This asset is currently allocated to <strong>{selectedAsset.currentHolder}</strong> ({selectedAsset.currentHolderEmail}).
-                    You cannot allocate it directly. Please fill out a Transfer Request instead.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Select Target Recipient */}
-            <div className="form-group">
-              <label className="form-label">{recipientLabelText}</label>
-              <select
-                className="form-input"
-                required
-                value={targetEmployeeEmail}
-                onChange={(e) => setTargetEmployeeEmail(e.target.value)}
-              >
-                <option value="">Select target recipient...</option>
-                {eligibleRecipients.map((emp) => (
-                  <option key={emp.email} value={emp.email}>
-                    {emp.name} ({emp.department} - {emp.role})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Dynamic input fields based on conflict */}
-            {!isConflict ? (
-              // direct allocation expected return date
+          {user.role === 'Employee' ? (
+            <form onSubmit={handleEmployeeRequestSubmit}>
               <div className="form-group">
-                <label className="form-label">Expected Return Date (Optional)</label>
-                <input
-                  type="date"
+                <label className="form-label">Select Available Asset</label>
+                <select
                   className="form-input"
-                  value={expectedReturnDate}
-                  onChange={(e) => setExpectedReturnDate(e.target.value)}
+                  required
+                  value={selectedAssetId}
+                  onChange={(e) => setSelectedAssetId(e.target.value)}
+                >
+                  <option value="">Select an available asset...</option>
+                  {selectableAssets.map((ast) => (
+                    <option key={ast.id} value={ast.id}>
+                      {ast.tag} - {ast.name} ({ast.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Requesting For</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  disabled
+                  value={`${user.name} (${user.email})`}
+                  style={{ background: 'var(--surface-subtle)', color: 'var(--text-secondary)' }}
                 />
               </div>
-            ) : (
-              // transfer request justification reason
+
               <div className="form-group">
-                <label className="form-label">Reason for Device Transfer</label>
+                <label className="form-label">Reason / Purpose for Asset Request</label>
                 <textarea
                   className="form-input"
                   style={{ minHeight: '80px', resize: 'vertical' }}
                   required
-                  placeholder="Justification for why this specific asset needs to be transferred..."
+                  placeholder="Explain why you need this equipment..."
                   value={transferReason}
                   onChange={(e) => setTransferReason(e.target.value)}
                 />
               </div>
-            )}
 
-            {/* Actions button */}
-            {!isConflict ? (
               <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-                <UserCheck size={18} /> Allocate Asset
+                <UserCheck size={18} /> Submit Asset Request
               </button>
-            ) : (
-              <button type="submit" className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem', borderColor: 'rgba(139, 92, 246, 0.4)', color: 'var(--accent-purple-soft)' }}>
-                <RefreshCw size={18} /> Submit Transfer Request
-              </button>
-            )}
-          </form>
+            </form>
+          ) : (
+            <form onSubmit={isConflict ? handleTransferSubmit : handleAllocateSubmit}>
+              {/* Step 1: Select Asset */}
+              <div className="form-group">
+                <label className="form-label">Select Asset / Device</label>
+                <select
+                  className="form-input"
+                  required
+                  value={selectedAssetId}
+                  onChange={(e) => setSelectedAssetId(e.target.value)}
+                >
+                  <option value="">Select an asset...</option>
+                  {selectableAssets.map((ast) => (
+                    <option key={ast.id} value={ast.id}>
+                      {ast.tag} - {ast.name} ({ast.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Conflict Alert Check */}
+              {isConflict && (
+                <div
+                  style={{
+                    background: 'rgba(244, 63, 94, 0.12)',
+                    border: '1px solid rgba(244, 63, 94, 0.35)',
+                    borderRadius: '12px',
+                    padding: '0.85rem 1.1rem',
+                    marginBottom: '1.25rem',
+                    fontSize: '0.85rem',
+                    color: 'var(--accent-rose-soft)',
+                    display: 'flex',
+                    gap: '0.6rem',
+                    alignItems: 'start',
+                  }}
+                >
+                  <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                  <div>
+                    <strong>Double-Allocation Blocked!</strong>
+                    <p style={{ marginTop: '0.2rem', color: 'var(--text-secondary)' }}>
+                      This asset is currently allocated to <strong>{selectedAsset.currentHolder}</strong> ({selectedAsset.currentHolderEmail}).
+                      You cannot allocate it directly. Please fill out a Transfer Request instead.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Select Target Recipient */}
+              <div className="form-group">
+                <label className="form-label">{recipientLabelText}</label>
+                <select
+                  className="form-input"
+                  required
+                  value={targetEmployeeEmail}
+                  onChange={(e) => setTargetEmployeeEmail(e.target.value)}
+                >
+                  <option value="">Select target recipient...</option>
+                  {eligibleRecipients.map((emp) => (
+                    <option key={emp.email} value={emp.email}>
+                      {emp.name} ({emp.department} - {emp.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Dynamic input fields based on conflict */}
+              {!isConflict ? (
+                // direct allocation expected return date
+                <div className="form-group">
+                  <label className="form-label">Expected Return Date (Optional)</label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={expectedReturnDate}
+                    onChange={(e) => setExpectedReturnDate(e.target.value)}
+                  />
+                </div>
+              ) : (
+                // transfer request justification reason
+                <div className="form-group">
+                  <label className="form-label">Reason for Device Transfer</label>
+                  <textarea
+                    className="form-input"
+                    style={{ minHeight: '80px', resize: 'vertical' }}
+                    required
+                    placeholder="Justification for why this specific asset needs to be transferred..."
+                    value={transferReason}
+                    onChange={(e) => setTransferReason(e.target.value)}
+                  />
+                </div>
+              )}
+
+              {/* Actions button */}
+              {!isConflict ? (
+                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+                  <UserCheck size={18} /> Allocate Asset
+                </button>
+              ) : (
+                <button type="submit" className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem', borderColor: 'rgba(139, 92, 246, 0.4)', color: 'var(--accent-purple-soft)' }}>
+                  <RefreshCw size={18} /> Submit Transfer Request
+                </button>
+              )}
+            </form>
+          )}
         </div>
 
         {/* List Panel: Returns & Current Allocations */}

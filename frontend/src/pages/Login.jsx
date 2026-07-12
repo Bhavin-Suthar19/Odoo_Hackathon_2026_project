@@ -175,39 +175,6 @@ export default function Login({ setCurrentTab }) {
           </button>
         </form>
 
-        {/* Developer Quick Impersonators Grid */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-            <ShieldAlert size={14} color="#a78bfa" />
-            <span style={{ fontSize: '0.78rem', color: 'var(--accent-purple-soft)', fontWeight: 700, textTransform: 'uppercase' }}>
-              Developer Quick Access accounts:
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            {demoAccounts.map((acc) => (
-              <button
-                key={acc.email}
-                type="button"
-                onClick={() => handleQuickLogin(acc.email)}
-                disabled={submitting}
-                className="btn btn-secondary"
-                style={{
-                  padding: '0.5rem',
-                  fontSize: '0.75rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.1rem',
-                }}
-              >
-                <span style={{ color: acc.color, fontWeight: 800 }}>{acc.label}</span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{acc.email}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div
           style={{
             marginTop: '1.75rem',
