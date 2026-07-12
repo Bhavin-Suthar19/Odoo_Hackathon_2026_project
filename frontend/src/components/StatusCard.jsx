@@ -59,7 +59,7 @@ export default function StatusCard() {
         {/* Backend Node/Express Status */}
         <div
           style={{
-            background: 'rgba(15, 19, 29, 0.65)',
+            background: 'var(--surface-panel)',
             padding: '1.1rem',
             borderRadius: '14px',
             border: '1px solid var(--border-glass)',
@@ -87,7 +87,7 @@ export default function StatusCard() {
         {/* Cloud Supabase Status */}
         <div
           style={{
-            background: 'rgba(15, 19, 29, 0.65)',
+            background: 'var(--surface-panel)',
             padding: '1.1rem',
             borderRadius: '14px',
             border: '1px solid var(--border-glass)',

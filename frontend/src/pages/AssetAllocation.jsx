@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { UserCheck, RefreshCw, CheckCircle, AlertTriangle, X, Clipboard, ArrowRight } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function AssetAllocation() {
   const { user } = useAuth();
@@ -85,7 +86,7 @@ export default function AssetAllocation() {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Allocation & <span className="heading-gradient">Transfers</span></h2>
+        <h2 className="page-title">Allocation & <span className="heading-gradient">Transfers</span></h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Assign assets to team members, manage returns, and approve device transfers</p>
       </div>
 
@@ -126,7 +127,7 @@ export default function AssetAllocation() {
                   padding: '0.85rem 1.1rem',
                   marginBottom: '1.25rem',
                   fontSize: '0.85rem',
-                  color: '#fda4af',
+                  color: 'var(--accent-rose-soft)',
                   display: 'flex',
                   gap: '0.6rem',
                   alignItems: 'start',
@@ -348,48 +349,44 @@ export default function AssetAllocation() {
       </div>
 
       {/* Modal: Process Return (Check-in Condition Notes) */}
-      {showReturnModal && (
-        <div className="modal-backdrop" onClick={() => setShowReturnModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Process Asset Return Check-in</h3>
-              <button onClick={() => setShowReturnModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleReturnSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Return Condition Check</label>
-                <select
-                  className="form-input"
-                  value={returnCondition}
-                  onChange={(e) => setReturnCondition(e.target.value)}
-                >
-                  <option value="Excellent">Excellent - Unused / Perfect</option>
-                  <option value="Good">Good - Minor scratches only</option>
-                  <option value="Fair">Fair - Normal wear & tear</option>
-                  <option value="Poor">Poor - Needs refurbishment / cleaning</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Condition Check-in Notes</label>
-                <textarea
-                  className="form-input"
-                  style={{ minHeight: '90px' }}
-                  required
-                  placeholder="Record keyboard defects, charger check-in, visual inspection detail..."
-                  value={returnNotes}
-                  onChange={(e) => setReturnNotes(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowReturnModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Accept Device & Check-in</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showReturnModal}
+        onClose={() => setShowReturnModal(false)}
+        title="Process Asset Return Check-in"
+      >
+        <form onSubmit={handleReturnSubmit}>
+          <div className="form-group">
+            <label className="form-label">Return Condition Check</label>
+            <select
+              className="form-input"
+              value={returnCondition}
+              onChange={(e) => setReturnCondition(e.target.value)}
+            >
+              <option value="Excellent">Excellent - Unused / Perfect</option>
+              <option value="Good">Good - Minor scratches only</option>
+              <option value="Fair">Fair - Normal wear & tear</option>
+              <option value="Poor">Poor - Needs refurbishment / cleaning</option>
+            </select>
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="form-label">Condition Check-in Notes</label>
+            <textarea
+              className="form-input"
+              style={{ minHeight: '90px' }}
+              required
+              placeholder="Record keyboard defects, charger check-in, visual inspection detail..."
+              value={returnNotes}
+              onChange={(e) => setReturnNotes(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowReturnModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Accept Device & Check-in</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

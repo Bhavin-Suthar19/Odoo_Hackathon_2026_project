@@ -20,7 +20,7 @@ export default function ActivityLogs() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Audit Logs & <span className="heading-gradient">Activity</span></h2>
+          <h2 className="page-title">Audit Logs & <span className="heading-gradient">Activity</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Track administrator configuration changes and live operational notifications</p>
         </div>
 

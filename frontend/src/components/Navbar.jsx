@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Network, LogOut, ShieldAlert, ShieldCheck, User, Sun, Moon } from 'lucide-react';
+import { Network, LogOut, ShieldAlert, ShieldCheck, User, Sun, Moon, Menu, X } from 'lucide-react';
 
-export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
+export default function Navbar({ currentTab, setCurrentTab, theme, setTheme, isSidebarOpen, setIsSidebarOpen }) {
   const { user, logout, impersonate } = useAuth();
 
   const mockUsers = [
@@ -31,22 +31,42 @@ export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           gap: '1rem',
         }}
       >
         {/* Brand Logo & Title */}
         <div
-          onClick={() => {
-            if (user) setCurrentTab('dashboard');
-          }}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.75rem',
-            cursor: user ? 'pointer' : 'default',
           }}
         >
+          {user && (
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="menu-toggle"
+              aria-label="Toggle Navigation Menu"
+              style={{ marginRight: '0.25rem' }}
+            >
+              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
+          <div
+            onClick={() => {
+              if (user) {
+                setCurrentTab('dashboard');
+                setIsSidebarOpen(false);
+              }
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              cursor: user ? 'pointer' : 'default',
+            }}
+          >
           <div
             style={{
               width: '40px',
@@ -65,15 +85,17 @@ export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
             <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>
               Asset<span className="heading-gradient">Flow</span>
             </h1>
-            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+            <p className="navbar-subtitle" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
               Enterprise Resource & Lifecycle ERP
             </p>
           </div>
         </div>
+      </div>
 
         {/* Impersonation Panel (Developer Assist) */}
         {user && (
           <div
+            className="navbar-desktop-only"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -132,7 +154,7 @@ export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
           </button>
 
           {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="navbar-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div
                 style={{
                   display: 'flex',
@@ -187,7 +209,7 @@ export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className="navbar-desktop-only" style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 onClick={() => setCurrentTab('login')}
                 className="btn btn-secondary"

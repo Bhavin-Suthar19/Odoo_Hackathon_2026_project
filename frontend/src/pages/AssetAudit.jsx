@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ClipboardCheck, Plus, Check, X, AlertTriangle, Eye, ShieldAlert } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function AssetAudit() {
   const { user } = useAuth();
@@ -77,7 +78,7 @@ export default function AssetAudit() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Asset <span className="heading-gradient">Audits</span></h2>
+          <h2 className="page-title">Asset <span className="heading-gradient">Audits</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Run structured verification cycles, track missing items, and review discrepancy logs</p>
         </div>
         {(user.role === 'Admin' || user.role === 'Asset Manager') && (
@@ -87,7 +88,7 @@ export default function AssetAudit() {
         )}
       </div>
 
-      <div className="grid-3" style={{ gridTemplateColumns: '280px 1fr', alignItems: 'start', gap: '1.5rem', marginBottom: '2rem' }}>
+      <div className="audit-grid">
         {/* Left column: Audit Cycles List */}
         <div className="glass-panel" style={{ padding: '1.25rem' }}>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -302,76 +303,72 @@ export default function AssetAudit() {
       </div>
 
       {/* Modal: Create Audit Cycle */}
-      {showCreateModal && (
-        <div className="modal-backdrop" onClick={() => setShowCreateModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Create Audit Cycle</h3>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleCreateAuditSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Audit Cycle Title</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Q3 Electronics Check"
-                  value={auditName}
-                  onChange={(e) => setAuditName(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Scope: Department</label>
-                  <select
-                    className="form-input"
-                    value={scopeDept}
-                    onChange={(e) => setScopeDept(e.target.value)}
-                  >
-                    <option value="">All Departments</option>
-                    {departments.map(d => (
-                      <option key={d.id} value={d.name}>{d.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Scope: Office Location</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. HQ Office 101"
-                    value={scopeLocation}
-                    onChange={(e) => setScopeLocation(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Assigned Auditor</label>
-                <select
-                  className="form-input"
-                  required
-                  value={assignedAuditorEmail}
-                  onChange={(e) => setAssignedAuditorEmail(e.target.value)}
-                >
-                  <option value="">Choose employee...</option>
-                  {employees.filter(e => e.status === 'Active').map(e => (
-                    <option key={e.email} value={e.email}>{e.name} ({e.role})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowCreateModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Initialize Audit</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create Audit Cycle"
+      >
+        <form onSubmit={handleCreateAuditSubmit}>
+          <div className="form-group">
+            <label className="form-label">Audit Cycle Title</label>
+            <input
+              type="text"
+              required
+              className="form-input"
+              placeholder="e.g. Q3 Electronics Check"
+              value={auditName}
+              onChange={(e) => setAuditName(e.target.value)}
+            />
           </div>
-        </div>
-      )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Scope: Department</label>
+              <select
+                className="form-input"
+                value={scopeDept}
+                onChange={(e) => setScopeDept(e.target.value)}
+              >
+                <option value="">All Departments</option>
+                {departments.map(d => (
+                  <option key={d.id} value={d.name}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Scope: Office Location</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="e.g. HQ Office 101"
+                value={scopeLocation}
+                onChange={(e) => setScopeLocation(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Assigned Auditor</label>
+            <select
+              className="form-input"
+              required
+              value={assignedAuditorEmail}
+              onChange={(e) => setAssignedAuditorEmail(e.target.value)}
+            >
+              <option value="">Choose employee...</option>
+              {employees.filter(e => e.status === 'Active').map(e => (
+                <option key={e.email} value={e.email}>{e.name} ({e.role})</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowCreateModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Initialize Audit</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

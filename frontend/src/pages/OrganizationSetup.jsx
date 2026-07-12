@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Plus, UserCheck, Shield, ToggleLeft, ToggleRight, FolderPlus, ArrowUpRight, Check, X } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function OrganizationSetup() {
   const { user } = useAuth();
@@ -103,7 +104,7 @@ export default function OrganizationSetup() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Organization <span className="heading-gradient">Setup</span></h2>
+          <h2 className="page-title">Organization <span className="heading-gradient">Setup</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Maintain departments, categories, and promote system roles (Admin Only)</p>
         </div>
 
@@ -317,191 +318,179 @@ export default function OrganizationSetup() {
       )}
 
       {/* Modal: Add Department */}
-      {showDeptModal && (
-        <div className="modal-backdrop" onClick={() => setShowDeptModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Create New Department</h3>
-              <button onClick={() => setShowDeptModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleDeptSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Department Name</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Product Design"
-                  value={deptForm.name}
-                  onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Assign Department Head</label>
-                <select
-                  className="form-input"
-                  value={deptForm.headEmail}
-                  onChange={(e) => setDeptForm({ ...deptForm, headEmail: e.target.value })}
-                >
-                  <option value="">Select Employee...</option>
-                  {employees.map(emp => (
-                    <option key={emp.email} value={emp.email}>{emp.name} ({emp.email})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Parent Department (For Hierarchy)</label>
-                <select
-                  className="form-input"
-                  value={deptForm.parentId}
-                  onChange={(e) => setDeptForm({ ...deptForm, parentId: e.target.value })}
-                >
-                  <option value="">None (Root Level)</option>
-                  {departments.map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowDeptModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Create Department</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showDeptModal}
+        onClose={() => setShowDeptModal(false)}
+        title="Create New Department"
+      >
+        <form onSubmit={handleDeptSubmit}>
+          <div className="form-group">
+            <label className="form-label">Department Name</label>
+            <input
+              type="text"
+              required
+              className="form-input"
+              placeholder="e.g. Product Design"
+              value={deptForm.name}
+              onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })}
+            />
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="form-label">Assign Department Head</label>
+            <select
+              className="form-input"
+              value={deptForm.headEmail}
+              onChange={(e) => setDeptForm({ ...deptForm, headEmail: e.target.value })}
+            >
+              <option value="">Select Employee...</option>
+              {employees.map(emp => (
+                <option key={emp.email} value={emp.email}>{emp.name} ({emp.email})</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Parent Department (For Hierarchy)</label>
+            <select
+              className="form-input"
+              value={deptForm.parentId}
+              onChange={(e) => setDeptForm({ ...deptForm, parentId: e.target.value })}
+            >
+              <option value="">None (Root Level)</option>
+              {departments.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowDeptModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Create Department</button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Modal: Add Category */}
-      {showCategoryModal && (
-        <div className="modal-backdrop" onClick={() => setShowCategoryModal(false)}>
-          <div className="modal-content" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Create Asset Category</h3>
-              <button onClick={() => setShowCategoryModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
+      <Modal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        title="Create Asset Category"
+      >
+        <form onSubmit={handleCategorySubmit}>
+          <div className="form-group">
+            <label className="form-label">Category Name</label>
+            <input
+              type="text"
+              required
+              className="form-input"
+              placeholder="e.g. Lab Equipment"
+              value={catForm.name}
+              onChange={(e) => setCatForm({ ...catForm, name: e.target.value })}
+            />
+          </div>
+
+          <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', marginTop: '1rem', background: 'var(--surface-inset)' }}>
+            <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Configure Custom Fields</label>
+
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Field Name (e.g. Serial Code)"
+                value={newFieldName}
+                onChange={(e) => setNewFieldName(e.target.value)}
+              />
+              <select
+                className="form-input"
+                style={{ width: '130px' }}
+                value={newFieldType}
+                onChange={(e) => setNewFieldType(e.target.value)}
+              >
+                <option value="text">Text</option>
+                <option value="number">Number</option>
+              </select>
+              <button type="button" onClick={handleAddField} className="btn btn-secondary" style={{ padding: '0.75rem' }}>
+                Add
+              </button>
             </div>
-            <form onSubmit={handleCategorySubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Category Name</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Lab Equipment"
-                  value={catForm.name}
-                  onChange={(e) => setCatForm({ ...catForm, name: e.target.value })}
-                />
-              </div>
 
-              <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', marginTop: '1rem', background: 'var(--surface-inset)' }}>
-                <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Configure Custom Fields</label>
-
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Field Name (e.g. Serial Code)"
-                    value={newFieldName}
-                    onChange={(e) => setNewFieldName(e.target.value)}
-                  />
-                  <select
-                    className="form-input"
-                    style={{ width: '130px' }}
-                    value={newFieldType}
-                    onChange={(e) => setNewFieldType(e.target.value)}
-                  >
-                    <option value="text">Text</option>
-                    <option value="number">Number</option>
-                  </select>
-                  <button type="button" onClick={handleAddField} className="btn btn-secondary" style={{ padding: '0.75rem' }}>
-                    Add
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {catForm.customFields.map((field, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface-hover)', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
+                  <div>
+                    <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{field.name}</span>
+                    <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>({field.type})</span>
+                  </div>
+                  <button type="button" onClick={() => handleRemoveField(idx)} style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
+                    Remove
                   </button>
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  {catForm.customFields.map((field, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface-hover)', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
-                      <div>
-                        <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{field.name}</span>
-                        <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>({field.type})</span>
-                      </div>
-                      <button type="button" onClick={() => handleRemoveField(idx)} style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowCategoryModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Create Category</button>
-              </div>
-            </form>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowCategoryModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Create Category</button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Modal: Add Employee */}
-      {showEmployeeModal && (
-        <div className="modal-backdrop" onClick={() => setShowEmployeeModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Add Employee to Directory</h3>
-              <button onClick={() => setShowEmployeeModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleEmployeeSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Monica Geller"
-                  value={empForm.name}
-                  onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  required
-                  className="form-input"
-                  placeholder="monica@company.com"
-                  value={empForm.email}
-                  onChange={(e) => setEmpForm({ ...empForm, email: e.target.value })}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Primary Department</label>
-                <select
-                  className="form-input"
-                  value={empForm.department}
-                  onChange={(e) => setEmpForm({ ...empForm, department: e.target.value })}
-                >
-                  {departments.map(d => (
-                    <option key={d.id} value={d.name}>{d.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '0.75rem', borderRadius: '10px', fontSize: '0.75rem', color: 'var(--accent-purple-soft)', marginBottom: '1.25rem' }}>
-                💡 <strong>ERP Role Constraint:</strong> Signup/Direct registration puts employees on the standard <em>Employee</em> role. Role elevations (to Department Head or Asset Manager) can be made in the main Employee Directory table by an Administrator.
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowEmployeeModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Add Employee</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showEmployeeModal}
+        onClose={() => setShowEmployeeModal(false)}
+        title="Add Employee to Directory"
+      >
+        <form onSubmit={handleEmployeeSubmit}>
+          <div className="form-group">
+            <label className="form-label">Full Name</label>
+            <input
+              type="text"
+              required
+              className="form-input"
+              placeholder="e.g. Monica Geller"
+              value={empForm.name}
+              onChange={(e) => setEmpForm({ ...empForm, name: e.target.value })}
+            />
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="form-label">Email Address</label>
+            <input
+              type="email"
+              required
+              className="form-input"
+              placeholder="monica@company.com"
+              value={empForm.email}
+              onChange={(e) => setEmpForm({ ...empForm, email: e.target.value })}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Primary Department</label>
+            <select
+              className="form-input"
+              value={empForm.department}
+              onChange={(e) => setEmpForm({ ...empForm, department: e.target.value })}
+            >
+              {departments.map(d => (
+                <option key={d.id} value={d.name}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '0.75rem', borderRadius: '10px', fontSize: '0.75rem', color: 'var(--accent-purple-soft)', marginBottom: '1.25rem' }}>
+            💡 <strong>ERP Role Constraint:</strong> Signup/Direct registration puts employees on the standard <em>Employee</em> role. Role elevations (to Department Head or Asset Manager) can be made in the main Employee Directory table by an Administrator.
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowEmployeeModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Add Employee</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

@@ -26,13 +26,41 @@ export default function Signup({ setCurrentTab }) {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: '460px',
-        margin: '2rem auto',
-      }}
-    >
-      <div className="glass-panel" style={{ padding: '2.5rem' }}>
+    <div className="auth-split-container">
+      {/* Left Branding Pane */}
+      <div className="auth-brand-pane">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--gradient-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-glow)' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>AF</span>
+          </div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Asset<span className="heading-gradient">Flow</span></h2>
+        </div>
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ fontSize: '1.8rem', fontWeight: 850, lineHeight: 1.25, color: 'var(--text-primary)' }}>
+            Join the Enterprise <span className="heading-gradient">AssetFlow ERP</span>
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.5rem', lineHeight: 1.5 }}>
+            Create your account to start managing hardware specs, tracking deployments, reserving workspaces, and participating in automated lifecycle audits.
+          </p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem', borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Instantly link with your department team</span>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Log activities and request custody transfers</span>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Real-time database and security audits</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Form Pane */}
+      <div className="auth-form-pane">
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
             style={{
@@ -50,10 +78,10 @@ export default function Signup({ setCurrentTab }) {
             <UserPlus size={26} color="#fff" />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
-            Create <span className="heading-gradient">Team Account</span>
+            Sign Up
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-            Register to test Cloud Supabase & Cookie session creation
+            Register to join the organization workspace
           </p>
         </div>
 
@@ -62,7 +90,7 @@ export default function Signup({ setCurrentTab }) {
             style={{
               background: 'rgba(244, 63, 94, 0.12)',
               border: '1px solid rgba(244, 63, 94, 0.4)',
-              color: '#fda4af',
+              color: 'var(--accent-rose-soft)',
               padding: '0.85rem 1rem',
               borderRadius: '12px',
               marginBottom: '1.5rem',

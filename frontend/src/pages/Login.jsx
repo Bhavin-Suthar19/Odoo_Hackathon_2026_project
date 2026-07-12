@@ -37,21 +37,48 @@ export default function Login({ setCurrentTab }) {
   };
 
   const demoAccounts = [
-    { label: 'Admin', email: 'admin@company.com', color: '#fda4af' },
-    { label: 'Asset Manager', email: 'manager@company.com', color: '#67e8f9' },
-    { label: 'Dept Head', email: 'priya@company.com', color: '#6ee7b7' },
-    { label: 'Employee', email: 'raj@company.com', color: '#c4b5fd' },
+    { label: 'Admin', email: 'admin@company.com', color: 'var(--accent-rose-soft)' },
+    { label: 'Asset Manager', email: 'manager@company.com', color: 'var(--accent-cyan)' },
+    { label: 'Dept Head', email: 'priya@company.com', color: 'var(--accent-emerald-soft)' },
+    { label: 'Employee', email: 'raj@company.com', color: 'var(--accent-purple-soft)' },
   ];
 
   return (
-    <div
-      style={{
-        maxWidth: '460px',
-        margin: '2rem auto',
-        animation: 'fadeIn 0.3s ease',
-      }}
-    >
-      <div className="glass-panel" style={{ padding: '2.5rem' }}>
+    <div className="auth-split-container">
+      {/* Left Branding Pane */}
+      <div className="auth-brand-pane">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--gradient-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-glow)' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#fff' }}>AF</span>
+          </div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Asset<span className="heading-gradient">Flow</span></h2>
+        </div>
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ fontSize: '1.8rem', fontWeight: 850, lineHeight: 1.25, color: 'var(--text-primary)' }}>
+            Enterprise Resource & <span className="heading-gradient">Lifecycle ERP</span>
+          </h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.5rem', lineHeight: 1.5 }}>
+            Centralize physical asset tracking, automate custody allocations, schedule shared resources, and manage inventory audits with high-fidelity analytics.
+          </p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem', borderTop: '1px solid var(--border-glass)', paddingTop: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Automated lifecycle and transfer audits</span>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Time-slot reservations for shared devices</span>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.88rem' }}>
+            <span style={{ color: 'var(--accent-cyan)' }}>✔</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Advanced role-based developer tools</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Form Pane */}
+      <div className="auth-form-pane">
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
             style={{
@@ -69,10 +96,10 @@ export default function Login({ setCurrentTab }) {
             <Lock size={26} color="#fff" />
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
-            Asset<span className="heading-gradient">Flow</span> Sign In
+            Sign In
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-            ERP Resource & Lifecycle Portal
+            Enter your credentials to access the workspace
           </p>
         </div>
 
@@ -81,7 +108,7 @@ export default function Login({ setCurrentTab }) {
             style={{
               background: 'rgba(244, 63, 94, 0.12)',
               border: '1px solid rgba(244, 63, 94, 0.4)',
-              color: '#fda4af',
+              color: 'var(--accent-rose-soft)',
               padding: '0.85rem 1rem',
               borderRadius: '12px',
               marginBottom: '1.5rem',

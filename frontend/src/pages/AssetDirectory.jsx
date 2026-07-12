@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Search, Plus, Filter, Tag, Info, Calendar, DollarSign, PenTool, CheckCircle, X, ChevronRight } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function AssetDirectory() {
   const { user } = useAuth();
@@ -112,7 +113,7 @@ export default function AssetDirectory() {
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Asset <span className="heading-gradient">Directory</span></h2>
+          <h2 className="page-title">Asset <span className="heading-gradient">Directory</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Centralized registry for physical assets and hardware specs</p>
         </div>
         {canRegister && (
@@ -145,7 +146,7 @@ export default function AssetDirectory() {
           </div>
 
           {/* Category Dropdown */}
-          <div style={{ width: '180px' }}>
+          <div style={{ flex: '1 1 180px' }}>
             <select
               className="form-input"
               value={selectedCategory}
@@ -159,7 +160,7 @@ export default function AssetDirectory() {
           </div>
 
           {/* Status Dropdown */}
-          <div style={{ width: '180px' }}>
+          <div style={{ flex: '1 1 180px' }}>
             <select
               className="form-input"
               value={selectedStatus}
@@ -177,7 +178,7 @@ export default function AssetDirectory() {
           </div>
 
           {/* Condition Dropdown */}
-          <div style={{ width: '160px' }}>
+          <div style={{ flex: '1 1 160px' }}>
             <select
               className="form-input"
               value={selectedCondition}
@@ -279,14 +280,13 @@ export default function AssetDirectory() {
       </div>
 
       {/* Modal: Register Asset */}
-      {showRegisterModal && (
-        <div className="modal-backdrop" onClick={() => setShowRegisterModal(false)}>
-          <div className="modal-content" style={{ maxWidth: '650px', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Register New Physical Asset</h3>
-              <button onClick={() => setShowRegisterModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleRegisterSubmit} style={{ padding: '1.5rem' }}>
+      <Modal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        title="Register New Physical Asset"
+        maxHeight="90vh"
+      >
+        <form onSubmit={handleRegisterSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div className="form-group">
                   <label className="form-label">Asset Name / Title</label>
@@ -427,30 +427,29 @@ export default function AssetDirectory() {
                 <button type="submit" className="btn btn-primary">Submit Registry</button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
 
       {/* Modal: View History Drawer */}
-      {selectedAsset && (
-        <div className="modal-backdrop" onClick={() => setSelectedAsset(null)}>
-          <div className="modal-content" style={{ maxWidth: '650px', maxHeight: '85vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 800 }}>
-                  {selectedAsset.tag}
-                </span>
-                <h3 style={{ fontWeight: 850, fontSize: '1.3rem' }}>{selectedAsset.name}</h3>
-              </div>
-              <button onClick={() => setSelectedAsset(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                <X size={20} />
-              </button>
+      <Modal
+        isOpen={!!selectedAsset}
+        onClose={() => setSelectedAsset(null)}
+        title={
+          selectedAsset ? (
+            <div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 800 }}>
+                {selectedAsset.tag}
+              </span>
+              <h3 style={{ fontWeight: 800, fontSize: '1.3rem' }}>{selectedAsset.name}</h3>
             </div>
-
-            <div style={{ padding: '1.5rem' }}>
+          ) : ''
+        }
+        maxHeight="85vh"
+      >
+        {selectedAsset && (
+          <div>
               {/* Asset Technical Details summary card */}
               <div className="glass-panel" style={{ padding: '1rem', background: 'var(--surface-inset)', marginBottom: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, color: '#a78bfa', marginBottom: '0.65rem' }}>
+                <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, color: 'var(--accent-purple-soft)', marginBottom: '0.65rem' }}>
                   Technical Specs Sheet
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem 1rem', fontSize: '0.82rem' }}>
@@ -550,11 +549,10 @@ export default function AssetDirectory() {
                     )}
                   </div>
                 </div>
-              </div>
-            </div>
           </div>
         </div>
       )}
+      </Modal>
     </div>
   );
 }

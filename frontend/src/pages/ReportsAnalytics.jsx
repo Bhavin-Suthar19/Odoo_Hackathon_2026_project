@@ -77,7 +77,7 @@ export default function ReportsAnalytics() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Reports & <span className="heading-gradient">Analytics</span></h2>
+          <h2 className="page-title">Reports & <span className="heading-gradient">Analytics</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Real-time operations stats, booking heatmaps, and device lifespans</p>
         </div>
         <button onClick={triggerExport} disabled={exporting} className="btn btn-primary">
@@ -160,7 +160,7 @@ export default function ReportsAnalytics() {
             Identifies peak hours usage slots for meeting rooms, projector screens, and vehicles.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
             {timeSlots.map((slot, idx) => {
               // calculate color opacity based on reservation volume
               const heatIntensity = slot.count > 0 ? Math.min(0.15 + (slot.count / maxBookingInSlot) * 0.45, 0.7) : 0.03;

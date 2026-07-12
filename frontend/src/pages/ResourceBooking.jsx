@@ -85,7 +85,7 @@ export default function ResourceBooking() {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Resource <span className="heading-gradient">Booking</span></h2>
+        <h2 className="page-title">Resource <span className="heading-gradient">Booking</span></h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Time-slot reservation for shared spaces, vehicles, and team equipment</p>
       </div>
 
@@ -201,7 +201,7 @@ export default function ResourceBooking() {
               <input
                 type="date"
                 className="form-input"
-                style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', width: '140px' }}
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', width: '165px' }}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
@@ -215,7 +215,7 @@ export default function ResourceBooking() {
           </div>
 
           {/* Vertical Hourly Grid */}
-          <div className="timeline-grid">
+          <div className="timeline-grid" style={{ maxHeight: '380px', overflowY: 'auto' }}>
             {hoursList.slice(0, -1).map((hour, idx) => {
               const nextHour = hoursList[idx + 1];
 
@@ -316,7 +316,7 @@ export default function ResourceBooking() {
                           borderRadius: '6px',
                           textTransform: 'uppercase',
                           background: b.status === 'Cancelled' ? 'rgba(239, 68, 68, 0.15)' : b.status === 'Ongoing' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(139, 92, 246, 0.15)',
-                          color: b.status === 'Cancelled' ? '#fca5a5' : b.status === 'Ongoing' ? '#6ee7b7' : 'var(--accent-purple-soft)'
+                          color: b.status === 'Cancelled' ? 'var(--accent-rose-soft)' : b.status === 'Ongoing' ? 'var(--accent-emerald-soft)' : 'var(--accent-purple-soft)'
                         }}
                       >
                         {b.status}
@@ -327,7 +327,7 @@ export default function ResourceBooking() {
                         <button
                           onClick={() => cancelBooking(b.id, user)}
                           className="btn btn-secondary"
-                          style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderColor: 'rgba(244, 63, 94, 0.3)', color: '#fda4af' }}
+                          style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem', borderColor: 'rgba(244, 63, 94, 0.3)', color: 'var(--accent-rose-soft)', fontWeight: 700 }}
                         >
                           Cancel Slot
                         </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Wrench, Plus, CheckCircle, XCircle, UserPlus, Play, Check, AlertTriangle, X } from 'lucide-react';
+import Modal from '../components/Modal';
 
 export default function MaintenanceManagement() {
   const { user } = useAuth();
@@ -88,7 +89,7 @@ export default function MaintenanceManagement() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Maintenance <span className="heading-gradient">Management</span></h2>
+          <h2 className="page-title">Maintenance <span className="heading-gradient">Management</span></h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Route device repairs through approvals, assign technicians, and track hardware logs</p>
         </div>
         <button onClick={() => setShowRaiseModal(true)} className="btn btn-primary">
@@ -212,122 +213,110 @@ export default function MaintenanceManagement() {
       </div>
 
       {/* Modal: Raise Request */}
-      {showRaiseModal && (
-        <div className="modal-backdrop" onClick={() => setShowRaiseModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Raise Maintenance Request</h3>
-              <button onClick={() => setShowRaiseModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleRaiseSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Select Faulty Device</label>
-                <select
-                  className="form-input"
-                  required
-                  value={selectedAssetId}
-                  onChange={(e) => setSelectedAssetId(e.target.value)}
-                >
-                  <option value="">Choose asset...</option>
-                  {assets.map(a => (
-                    <option key={a.id} value={a.id}>{a.tag} - {a.name} ({a.location})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Severity / Priority</label>
-                <select
-                  className="form-input"
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                >
-                  <option value="Low">Low - Cosmetic / minor wear</option>
-                  <option value="Medium">Medium - Hardware malfunctioning but usable</option>
-                  <option value="High">High - Critical failure / completely broken</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Describe the Issue</label>
-                <textarea
-                  className="form-input"
-                  style={{ minHeight: '90px' }}
-                  required
-                  placeholder="Explain what is broken, when it happened, or error codes..."
-                  value={issueDescription}
-                  onChange={(e) => setIssueDescription(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowRaiseModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">File Ticket</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showRaiseModal}
+        onClose={() => setShowRaiseModal(false)}
+        title="Raise Maintenance Request"
+      >
+        <form onSubmit={handleRaiseSubmit}>
+          <div className="form-group">
+            <label className="form-label">Select Faulty Device</label>
+            <select
+              className="form-input"
+              required
+              value={selectedAssetId}
+              onChange={(e) => setSelectedAssetId(e.target.value)}
+            >
+              <option value="">Choose asset...</option>
+              {assets.map(a => (
+                <option key={a.id} value={a.id}>{a.tag} - {a.name} ({a.location})</option>
+              ))}
+            </select>
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="form-label">Severity / Priority</label>
+            <select
+              className="form-input"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option value="Low">Low - Cosmetic / minor wear</option>
+              <option value="Medium">Medium - Hardware malfunctioning but usable</option>
+              <option value="High">High - Critical failure / completely broken</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Describe the Issue</label>
+            <textarea
+              className="form-input"
+              style={{ minHeight: '90px' }}
+              required
+              placeholder="Explain what is broken, when it happened, or error codes..."
+              value={issueDescription}
+              onChange={(e) => setIssueDescription(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowRaiseModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">File Ticket</button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Modal: Approve & Assign Tech */}
-      {showAssignModal && (
-        <div className="modal-backdrop" onClick={() => setShowAssignModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Approve Request & Assign Tech</h3>
-              <button onClick={() => setShowAssignModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleAssignSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Technician Name / Service Vendor</label>
-                <input
-                  type="text"
-                  required
-                  className="form-input"
-                  placeholder="e.g. Dave (Fleet Auto) / Apple Store Depot"
-                  value={technicianName}
-                  onChange={(e) => setTechnicianName(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowAssignModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Assign & Approve</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        title="Approve Request & Assign Tech"
+      >
+        <form onSubmit={handleAssignSubmit}>
+          <div className="form-group">
+            <label className="form-label">Technician Name / Service Vendor</label>
+            <input
+              type="text"
+              required
+              className="form-input"
+              placeholder="e.g. Dave (Fleet Auto) / Apple Store Depot"
+              value={technicianName}
+              onChange={(e) => setTechnicianName(e.target.value)}
+            />
           </div>
-        </div>
-      )}
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowAssignModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Assign & Approve</button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Modal: Resolve Notes */}
-      {showResolveModal && (
-        <div className="modal-backdrop" onClick={() => setShowResolveModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border-glass)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontWeight: 800 }}>Resolve Maintenance Ticket</h3>
-              <button onClick={() => setShowResolveModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleResolveSubmit} style={{ padding: '1.5rem' }}>
-              <div className="form-group">
-                <label className="form-label">Resolution Details</label>
-                <textarea
-                  className="form-input"
-                  style={{ minHeight: '90px' }}
-                  required
-                  placeholder="Describe how the device was repaired, spare parts costs, or warranty usage..."
-                  value={resolutionNotes}
-                  onChange={(e) => setResolutionNotes(e.target.value)}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-                <button type="button" onClick={() => setShowResolveModal(false)} className="btn btn-secondary">Cancel</button>
-                <button type="submit" className="btn btn-primary">Resolve & Release Asset</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showResolveModal}
+        onClose={() => setShowResolveModal(false)}
+        title="Resolve Maintenance Ticket"
+      >
+        <form onSubmit={handleResolveSubmit}>
+          <div className="form-group">
+            <label className="form-label">Resolution Details</label>
+            <textarea
+              className="form-input"
+              style={{ minHeight: '90px' }}
+              required
+              placeholder="Describe how the device was repaired, spare parts costs, or warranty usage..."
+              value={resolutionNotes}
+              onChange={(e) => setResolutionNotes(e.target.value)}
+            />
           </div>
-        </div>
-      )}
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <button type="button" onClick={() => setShowResolveModal(false)} className="btn btn-secondary">Cancel</button>
+            <button type="submit" className="btn btn-primary">Resolve & Release Asset</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

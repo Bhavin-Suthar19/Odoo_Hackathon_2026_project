@@ -57,7 +57,7 @@ export default function Dashboard({ setCurrentTab }) {
     <div>
       {/* Welcome Banner */}
       <div style={{ marginBottom: '2.5rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 850, lineHeight: 1.1 }}>
+        <h2 className="page-title">
           Welcome back, <span className="heading-gradient">{user.name}</span>
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.25rem' }}>
@@ -83,9 +83,9 @@ export default function Dashboard({ setCurrentTab }) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <AlertTriangle size={24} color="#fda4af" />
+            <AlertTriangle size={24} color="var(--accent-rose-soft)" />
             <div>
-              <strong style={{ fontSize: '0.95rem', color: '#fda4af' }}>
+              <strong style={{ fontSize: '0.95rem', color: 'var(--accent-rose-soft)' }}>
                 {overdueAllocations.length} Assets Overdue for Action!
               </strong>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
@@ -96,7 +96,7 @@ export default function Dashboard({ setCurrentTab }) {
           <button
             onClick={() => setCurrentTab('allocation')}
             className="btn btn-secondary"
-            style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', background: 'rgba(244, 63, 94, 0.2)', color: '#fda4af', border: 'none' }}
+            style={{ fontSize: '0.8rem', padding: '0.45rem 1rem', background: 'rgba(244, 63, 94, 0.15)', color: 'var(--accent-rose-soft)', border: 'none', fontWeight: 700 }}
           >
             Review Overdue Lists <ArrowRight size={14} />
           </button>
@@ -111,7 +111,7 @@ export default function Dashboard({ setCurrentTab }) {
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Assets Available</span>
             <Layers size={18} color="var(--accent-emerald)" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{availableCount}</h3>
+          <h3 className="kpi-value">{availableCount}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Ready for employee allocation</p>
         </div>
 
@@ -121,7 +121,7 @@ export default function Dashboard({ setCurrentTab }) {
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Assets Allocated</span>
             <UserCheck size={18} color="var(--accent-primary)" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{allocatedCount}</h3>
+          <h3 className="kpi-value">{allocatedCount}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Held by employees/departments</p>
         </div>
 
@@ -131,7 +131,7 @@ export default function Dashboard({ setCurrentTab }) {
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Under Maintenance</span>
             <Wrench size={18} color="var(--accent-rose)" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{maintenanceCount}</h3>
+          <h3 className="kpi-value">{maintenanceCount}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Currently out of service for repair</p>
         </div>
 
@@ -141,17 +141,17 @@ export default function Dashboard({ setCurrentTab }) {
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Active Bookings</span>
             <Calendar size={18} color="var(--accent-cyan)" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{activeBookingsCount}</h3>
+          <h3 className="kpi-value">{activeBookingsCount}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Shared resources reserved</p>
         </div>
 
         {/* KPI 5: Pending Transfers */}
-        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #fca5a5' }}>
+        <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-rose-soft)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Pending Transfers</span>
-            <ArrowRightLeft size={18} color="#fca5a5" />
+            <ArrowRightLeft size={18} color="var(--accent-rose-soft)" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{pendingTransfersCount}</h3>
+          <h3 className="kpi-value">{pendingTransfersCount}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Device custody transfers awaiting approval</p>
         </div>
 
@@ -161,7 +161,7 @@ export default function Dashboard({ setCurrentTab }) {
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Overdue Returns</span>
             <Clock size={18} color="#f43f5e" />
           </div>
-          <h3 style={{ fontSize: '2rem', fontWeight: 800, color: overdueAllocations.length > 0 ? '#fda4af' : 'var(--text-primary)' }}>{overdueAllocations.length}</h3>
+          <h3 className="kpi-value" style={{ color: overdueAllocations.length > 0 ? 'var(--accent-rose-soft)' : 'var(--text-primary)' }}>{overdueAllocations.length}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Overdue return schedules flagged</p>
         </div>
       </div>
@@ -218,7 +218,7 @@ export default function Dashboard({ setCurrentTab }) {
                       Held by: <strong>{ast.currentHolder}</strong>
                     </p>
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: '#fca5a5', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--accent-rose-soft)', fontWeight: 700 }}>
                     Due: {ast.expectedReturnDate}
                   </span>
                 </div>
@@ -233,7 +233,7 @@ export default function Dashboard({ setCurrentTab }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             {activityLogs.slice(0, 4).map((log) => (
               <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#a78bfa', marginTop: '0.35rem', flexShrink: 0 }} />
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-purple-soft)', marginTop: '0.35rem', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
                   <strong>{log.action}</strong>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
