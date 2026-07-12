@@ -17,6 +17,7 @@ const morgan = require('morgan');
 
 const authRoutes = require('./routes/authRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const erpRoutes = require('./routes/erpRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -56,6 +57,9 @@ app.use('/api/health', healthRoutes);
 
 // Authentication & Demo user endpoints
 app.use('/api/auth', authRoutes);
+
+// Enterprise Asset & Resource Management ERP endpoints
+app.use('/api/erp', erpRoutes);
 
 // Root informative endpoint
 app.get('/', (req, res) => {
