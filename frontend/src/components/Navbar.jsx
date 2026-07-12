@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Network, LogOut, ShieldAlert, ShieldCheck, User } from 'lucide-react';
+import { LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
 
 export default function Navbar({ currentTab, setCurrentTab }) {
   const { user, logout, impersonate } = useAuth();
+  const [isLight, setIsLight] = useState(
+    () => localStorage.getItem('af_theme') === 'light'
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', isLight);
+    localStorage.setItem('af_theme', isLight ? 'light' : 'dark');
+  }, [isLight]);
 
   const mockUsers = [
     { name: 'Admin User', email: 'admin@company.com', role: 'Admin' },
@@ -18,7 +26,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(9, 11, 16, 0.85)',
+        backgroundColor: 'var(--bg-navbar)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--border-glass)',
         padding: '0.8rem 1.5rem',
@@ -85,14 +93,14 @@ export default function Navbar({ currentTab, setCurrentTab }) {
             }}
           >
             <ShieldAlert size={14} color="#a78bfa" style={{ animation: 'pulseGlow 2s infinite' }} />
-            <span style={{ fontSize: '0.75rem', color: '#c4b5fd', fontWeight: 600 }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple-soft)', fontWeight: 600 }}>
               Testing Tool (Impersonate):
             </span>
             <select
               value={user.email}
               onChange={(e) => impersonate(e.target.value)}
               style={{
-                background: '#0f131d',
+                background: 'var(--bg-secondary)',
                 border: '1px solid var(--border-glass)',
                 color: 'var(--text-primary)',
                 padding: '0.2rem 0.5rem',
@@ -114,6 +122,19 @@ export default function Navbar({ currentTab, setCurrentTab }) {
 
         {/* User Session Profile & Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={() => setIsLight(!isLight)}
+            title={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+            className="btn btn-secondary"
+            style={{
+              padding: '0.4rem 0.65rem',
+              fontSize: '0.8rem',
+              borderRadius: '10px',
+              display: 'flex',
+            }}
+          >
+            {isLight ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div
@@ -143,7 +164,7 @@ export default function Navbar({ currentTab, setCurrentTab }) {
                   style={{
                     fontSize: '0.68rem',
                     background: 'rgba(139, 92, 246, 0.2)',
-                    color: '#c4b5fd',
+                    color: 'var(--accent-purple-soft)',
                     padding: '0.15rem 0.45rem',
                     borderRadius: '6px',
                     fontWeight: 700,

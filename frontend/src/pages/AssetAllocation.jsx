@@ -196,7 +196,7 @@ export default function AssetAllocation() {
                 <UserCheck size={18} /> Allocate Asset
               </button>
             ) : (
-              <button type="submit" className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem', borderColor: 'rgba(139, 92, 246, 0.4)', color: '#c4b5fd' }}>
+              <button type="submit" className="btn btn-secondary" style={{ width: '100%', marginTop: '0.5rem', borderColor: 'rgba(139, 92, 246, 0.4)', color: 'var(--accent-purple-soft)' }}>
                 <RefreshCw size={18} /> Submit Transfer Request
               </button>
             )}
@@ -220,7 +220,7 @@ export default function AssetAllocation() {
                   <div
                     key={asset.id}
                     style={{
-                      background: 'rgba(255,255,255,0.02)',
+                      background: 'var(--surface-hover)',
                       border: '1px solid var(--border-glass)',
                       borderColor: isOverdue ? 'rgba(244, 63, 94, 0.25)' : 'var(--border-glass)',
                       borderRadius: '12px',

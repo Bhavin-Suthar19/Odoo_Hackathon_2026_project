@@ -241,12 +241,12 @@ export default function ResourceBooking() {
                     {bookingFound ? (
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
                         <div>
-                          <strong style={{ fontSize: '0.85rem', color: '#c4b5fd' }}>{bookingFound.purpose}</strong>
+                          <strong style={{ fontSize: '0.85rem', color: 'var(--accent-purple-soft)' }}>{bookingFound.purpose}</strong>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                             Reserved by {bookingFound.user} ({bookingFound.userEmail})
                           </div>
                         </div>
-                        <span style={{ fontSize: '0.68rem', background: 'rgba(139, 92, 246, 0.25)', color: '#c4b5fd', padding: '0.15rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
+                        <span style={{ fontSize: '0.68rem', background: 'rgba(139, 92, 246, 0.25)', color: 'var(--accent-purple-soft)', padding: '0.15rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
                           OCCUPIED
                         </span>
                       </div>
@@ -316,7 +316,7 @@ export default function ResourceBooking() {
                           borderRadius: '6px',
                           textTransform: 'uppercase',
                           background: b.status === 'Cancelled' ? 'rgba(239, 68, 68, 0.15)' : b.status === 'Ongoing' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(139, 92, 246, 0.15)',
-                          color: b.status === 'Cancelled' ? '#fca5a5' : b.status === 'Ongoing' ? '#6ee7b7' : '#c4b5fd'
+                          color: b.status === 'Cancelled' ? '#fca5a5' : b.status === 'Ongoing' ? '#6ee7b7' : 'var(--accent-purple-soft)'
                         }}
                       >
                         {b.status}

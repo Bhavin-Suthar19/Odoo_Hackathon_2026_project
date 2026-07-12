@@ -108,7 +108,7 @@ export default function MaintenanceManagement() {
                   <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: col.color }} />
                   <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{col.label}</span>
                 </div>
-                <span style={{ fontSize: '0.72rem', background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.72rem', background: 'var(--surface-subtle)', color: 'var(--text-secondary)', padding: '0.15rem 0.45rem', borderRadius: '9999px', fontWeight: 700 }}>
                   {col.count}
                 </span>
               </div>
@@ -141,7 +141,7 @@ export default function MaintenanceManagement() {
                         </span>
                       </div>
 
-                      <strong style={{ fontSize: '0.85rem', display: 'block', marginBottom: '0.35rem' }}>{ticket.assetName}</strong>
+                      <strong style={{ fontSize: '0.85rem', display: 'block', marginBottom: '0.35rem', color: 'var(--text-primary)' }}>{ticket.assetName}</strong>
                       <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.3, marginBottom: '0.6rem' }}>
                         "{ticket.issue}"
                       </p>

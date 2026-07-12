@@ -75,7 +75,7 @@ export default function ActivityLogs() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'start',
-                    background: notif.read ? 'rgba(255, 255, 255, 0.01)' : 'rgba(139, 92, 246, 0.04)',
+                    background: notif.read ? 'var(--surface-hover)' : 'rgba(139, 92, 246, 0.04)',
                     border: '1px solid var(--border-glass)',
                     borderColor: notif.read ? 'var(--border-glass)' : 'rgba(139, 92, 246, 0.2)',
                     borderRadius: '12px',
@@ -118,7 +118,7 @@ export default function ActivityLogs() {
                         setLocalNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
                       }}
                       className="btn btn-secondary"
-                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem', border: 'none', background: 'rgba(255,255,255,0.03)' }}
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.7rem', border: 'none', background: 'var(--surface-hover)' }}
                     >
                       Mark read
                     </button>
@@ -173,7 +173,7 @@ export default function ActivityLogs() {
                         </div>
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: '#c4b5fd', background: 'rgba(139, 92, 246, 0.1)', padding: '0.15rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: 'var(--accent-purple-soft)', background: 'rgba(139, 92, 246, 0.1)', padding: '0.15rem 0.4rem', borderRadius: '4px', fontWeight: 600 }}>
                           <Shield size={10} />
                           <span>Audit verified</span>
                         </span>

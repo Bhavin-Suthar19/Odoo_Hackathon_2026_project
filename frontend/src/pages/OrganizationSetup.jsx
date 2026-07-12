@@ -205,7 +205,7 @@ export default function OrganizationSetup() {
           {categories.map((cat) => (
             <div key={cat.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#c4b5fd' }}>{cat.name}</h3>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-purple-soft)' }}>{cat.name}</h3>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
                   {cat.fields.length} Custom Fields
                 </span>
@@ -220,7 +220,7 @@ export default function OrganizationSetup() {
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontStyle: 'italic' }}>No custom fields configured</span>
                   ) : (
                     cat.fields.map((f, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(0,0,0,0.15)', padding: '0.4rem 0.65rem', borderRadius: '6px', fontSize: '0.82rem' }}>
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--surface-inset)', padding: '0.4rem 0.65rem', borderRadius: '6px', fontSize: '0.82rem' }}>
                         <span style={{ fontWeight: 600 }}>{f.name}</span>
                         <span style={{ color: 'var(--text-secondary)', fontSize: '0.72rem', textTransform: 'uppercase' }}>{f.type}</span>
                       </div>
@@ -264,7 +264,7 @@ export default function OrganizationSetup() {
                       <span
                         style={{
                           fontSize: '0.75rem',
-                          background: emp.role === 'Admin' ? 'rgba(244, 63, 94, 0.15)' : emp.role === 'Asset Manager' ? 'rgba(6, 182, 212, 0.15)' : emp.role === 'Department Head' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.05)',
+                          background: emp.role === 'Admin' ? 'rgba(244, 63, 94, 0.15)' : emp.role === 'Asset Manager' ? 'rgba(6, 182, 212, 0.15)' : emp.role === 'Department Head' ? 'rgba(16, 185, 129, 0.15)' : 'var(--surface-subtle)',
                           color: emp.role === 'Admin' ? '#fda4af' : emp.role === 'Asset Manager' ? '#67e8f9' : emp.role === 'Department Head' ? '#6ee7b7' : 'var(--text-secondary)',
                           padding: '0.2rem 0.5rem',
                           borderRadius: '6px',
@@ -292,7 +292,7 @@ export default function OrganizationSetup() {
                         onChange={(e) => updateEmployeeRole(emp.email, e.target.value, user)}
                         disabled={emp.status === 'Inactive'}
                         style={{
-                          background: '#090b10',
+                          background: 'var(--bg-primary)',
                           border: '1px solid var(--border-glass)',
                           color: 'var(--text-primary)',
                           padding: '0.35rem 0.75rem',
@@ -395,7 +395,7 @@ export default function OrganizationSetup() {
                 />
               </div>
 
-              <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', marginTop: '1rem', background: 'rgba(0,0,0,0.15)' }}>
+              <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', marginTop: '1rem', background: 'var(--surface-inset)' }}>
                 <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Configure Custom Fields</label>
 
                 <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -422,7 +422,7 @@ export default function OrganizationSetup() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                   {catForm.customFields.map((field, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface-hover)', padding: '0.5rem 0.75rem', borderRadius: '8px' }}>
                       <div>
                         <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{field.name}</span>
                         <span style={{ marginLeft: '0.5rem', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>({field.type})</span>
@@ -490,7 +490,7 @@ export default function OrganizationSetup() {
                 </select>
               </div>
 
-              <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '0.75rem', borderRadius: '10px', fontSize: '0.75rem', color: '#c4b5fd', marginBottom: '1.25rem' }}>
+              <div style={{ background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '0.75rem', borderRadius: '10px', fontSize: '0.75rem', color: 'var(--accent-purple-soft)', marginBottom: '1.25rem' }}>
                 💡 <strong>ERP Role Constraint:</strong> Signup/Direct registration puts employees on the standard <em>Employee</em> role. Role elevations (to Department Head or Asset Manager) can be made in the main Employee Directory table by an Administrator.
               </div>
 

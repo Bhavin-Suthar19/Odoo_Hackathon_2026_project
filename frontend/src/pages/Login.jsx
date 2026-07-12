@@ -152,7 +152,7 @@ export default function Login({ setCurrentTab }) {
         <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
             <ShieldAlert size={14} color="#a78bfa" />
-            <span style={{ fontSize: '0.78rem', color: '#c4b5fd', fontWeight: 700, textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--accent-purple-soft)', fontWeight: 700, textTransform: 'uppercase' }}>
               Developer Quick Access accounts:
             </span>
           </div>

@@ -108,7 +108,7 @@ export default function AssetAudit() {
                     width: '100%',
                     padding: '0.75rem',
                     borderRadius: '10px',
-                    background: isActive ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.02)',
+                    background: isActive ? 'rgba(139, 92, 246, 0.15)' : 'var(--surface-hover)',
                     border: '1px solid',
                     borderColor: isActive ? 'rgba(139, 92, 246, 0.35)' : 'var(--border-glass)',
                     color: 'var(--text-primary)',
@@ -116,7 +116,7 @@ export default function AssetAudit() {
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <strong style={{ fontSize: '0.88rem', color: isActive ? '#c4b5fd' : 'var(--text-primary)' }}>{aud.name}</strong>
+                  <strong style={{ fontSize: '0.88rem', color: isActive ? 'var(--accent-purple-soft)' : 'var(--text-primary)' }}>{aud.name}</strong>
                   <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
                     Auditor: {aud.assignedAuditor.split(' ')[0]}
                   </span>

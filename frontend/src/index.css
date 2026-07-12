@@ -10,6 +10,16 @@
 :root {
   --bg-primary: #090b10;
   --bg-secondary: #0f131d;
+  --bg-navbar: rgba(9, 11, 16, 0.85);
+  --surface-column: rgba(15, 19, 29, 0.55);
+  --surface-card: rgba(22, 28, 44, 0.9);
+  --surface-panel: rgba(15, 19, 29, 0.4);
+  --surface-panel-header: rgba(22, 28, 44, 0.85);
+  --surface-hover: rgba(255, 255, 255, 0.03);
+  --surface-subtle: rgba(255, 255, 255, 0.05);
+  --surface-inset: rgba(0, 0, 0, 0.15);
+  --surface-overlay: rgba(0, 0, 0, 0.7);
+  --accent-purple-soft: #c4b5fd;
   --bg-card: rgba(22, 28, 44, 0.65);
   --bg-card-hover: rgba(30, 38, 60, 0.8);
   --border-glass: rgba(255, 255, 255, 0.08);
@@ -259,7 +269,7 @@ body {
   overflow-x: auto;
   border-radius: 12px;
   border: 1px solid var(--border-glass);
-  background: rgba(15, 19, 29, 0.4);
+  background: var(--surface-panel);
 }
 
 .custom-table {
@@ -270,7 +280,7 @@ body {
 }
 
 .custom-table th {
-  background: rgba(22, 28, 44, 0.85);
+  background: var(--surface-panel-header);
   padding: 0.9rem 1.2rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -292,7 +302,7 @@ body {
 }
 
 .custom-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--surface-hover);
 }
 
 /* Status Badges */
@@ -363,7 +373,7 @@ body {
   flex: 1;
   min-width: 250px;
   max-width: 320px;
-  background: rgba(15, 19, 29, 0.55);
+  background: var(--surface-column);
   border: 1px solid var(--border-glass);
   border-radius: 14px;
   padding: 1rem;
@@ -389,12 +399,17 @@ body {
 }
 
 .kanban-card {
-  background: rgba(22, 28, 44, 0.9);
+  background: var(--surface-card);
   border: 1px solid var(--border-glass);
   border-radius: 10px;
   padding: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.kanban-card strong {
+  color: var(--text-primary);
 }
 
 .kanban-card:hover {
@@ -429,7 +444,7 @@ body {
 }
 
 .tab-btn.active {
-  color: #c4b5fd;
+  color: var(--accent-purple-soft);
 }
 
 .tab-btn.active::after {
@@ -449,7 +464,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--surface-overlay);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -481,7 +496,7 @@ body {
   border: 1px solid var(--border-glass);
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(15, 19, 29, 0.4);
+  background: var(--surface-panel);
 }
 
 .timeline-row {
@@ -499,7 +514,7 @@ body {
   font-weight: 700;
   font-size: 0.78rem;
   color: var(--text-secondary);
-  background: rgba(22, 28, 44, 0.75);
+  background: var(--surface-panel-header);
   border-right: 1px solid var(--border-glass);
   display: flex;
   align-items: center;
@@ -533,5 +548,68 @@ body {
   background: var(--gradient-glow);
   border-radius: 9999px;
   transition: width 0.4s ease-in-out;
+}
+
+/* Light theme overrides */
+html.light {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-navbar: rgba(255, 255, 255, 0.9);
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --border-glass: rgba(0, 0, 0, 0.1);
+  --border-glass-bright: rgba(139, 92, 246, 0.35);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --shadow-glow: 0 0 35px -5px rgba(139, 92, 246, 0.2);
+  --surface-column: #ffffff;
+  --surface-card: #ffffff;
+  --surface-panel: #f8fafc;
+  --surface-panel-header: #e2e8f0;
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --surface-subtle: rgba(0, 0, 0, 0.06);
+  --surface-inset: rgba(0, 0, 0, 0.04);
+  --surface-overlay: rgba(15, 23, 42, 0.45);
+  --accent-purple-soft: #7c3aed;
+}
+
+html.light body {
+  background-image:
+    radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+}
+
+html.light .glass-panel {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+html.light .glass-panel:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+html.light .kanban-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html.light .custom-table tr:hover td {
+  background: var(--surface-hover);
+}
+
+html.light .form-input {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+html.light .btn-secondary {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+html.light .btn-secondary:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+html.light .chart-bar-container {
+  background: rgba(0, 0, 0, 0.06);
 }
 

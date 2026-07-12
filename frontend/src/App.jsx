@@ -77,7 +77,7 @@ function AppContent() {
         <aside
           style={{
             width: '260px',
-            backgroundColor: '#0f131d',
+            backgroundColor: 'var(--bg-secondary)',
             borderRight: '1px solid var(--border-glass)',
             padding: '1.5rem 1rem',
             display: 'flex',
@@ -106,7 +106,7 @@ function AppContent() {
                   background: isActive ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
                   border: '1px solid',
                   borderColor: isActive ? 'rgba(139, 92, 246, 0.35)' : 'transparent',
-                  color: isActive ? '#c4b5fd' : 'var(--text-secondary)',
+                  color: isActive ? 'var(--accent-purple-soft)' : 'var(--text-secondary)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   fontSize: '0.9rem',
@@ -115,8 +115,8 @@ function AppContent() {
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                    e.currentTarget.style.background = 'var(--surface-hover)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -135,7 +135,7 @@ function AppContent() {
         </aside>
 
         {/* Main Content Area */}
-        <main style={{ flex: 1, padding: '2rem', overflowY: 'auto', backgroundColor: '#090b10' }}>
+        <main style={{ flex: 1, padding: '2rem', overflowY: 'auto', backgroundColor: 'var(--bg-primary)' }}>
           {currentTab === 'dashboard' && <Dashboard setCurrentTab={setCurrentTab} />}
           {currentTab === 'org_setup' && <OrganizationSetup />}
           {currentTab === 'assets' && <AssetDirectory />}
@@ -153,7 +153,7 @@ function AppContent() {
           textAlign: 'center',
           padding: '1.2rem',
           borderTop: '1px solid var(--border-glass)',
-          backgroundColor: '#090b10',
+          backgroundColor: 'var(--bg-primary)',
           color: 'var(--text-muted)',
           fontSize: '0.78rem',
           zIndex: 10,

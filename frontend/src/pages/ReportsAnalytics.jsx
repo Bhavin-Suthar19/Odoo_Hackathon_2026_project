@@ -90,7 +90,7 @@ export default function ReportsAnalytics() {
       <div className="grid-3" style={{ marginBottom: '2rem' }}>
         {/* Stat 1: Global Utilization */}
         <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c4b5fd' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-purple-soft)' }}>
             <TrendingUp size={24} />
           </div>
           <div>
@@ -164,7 +164,7 @@ export default function ReportsAnalytics() {
             {timeSlots.map((slot, idx) => {
               // calculate color opacity based on reservation volume
               const heatIntensity = slot.count > 0 ? Math.min(0.15 + (slot.count / maxBookingInSlot) * 0.45, 0.7) : 0.03;
-              const textColor = slot.count > 0 ? '#c4b5fd' : 'var(--text-muted)';
+              const textColor = slot.count > 0 ? 'var(--accent-purple-soft)' : 'var(--text-muted)';
               const borderColor = slot.count > 0 ? 'rgba(139, 92, 246, 0.4)' : 'var(--border-glass)';
 
               return (
@@ -185,7 +185,7 @@ export default function ReportsAnalytics() {
                   }}
                 >
                   <span style={{ fontSize: '0.72rem', fontWeight: 700, color: textColor }}>{slot.label.split(' - ')[0]}</span>
-                  <strong style={{ fontSize: '0.95rem', color: slot.count > 0 ? '#fff' : 'var(--text-secondary)' }}>
+                  <strong style={{ fontSize: '0.95rem', color: slot.count > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
                     {slot.count} book{slot.count === 1 ? '' : 's'}
                   </strong>
                 </div>
@@ -237,7 +237,7 @@ export default function ReportsAnalytics() {
               </span>
             ) : (
               nearingRetirement.map((asset) => (
-                <div key={asset.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-glass)', padding: '0.75rem 1rem', borderRadius: '10px' }}>
+                <div key={asset.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface-hover)', border: '1px solid var(--border-glass)', padding: '0.75rem 1rem', borderRadius: '10px' }}>
                   <div>
                     <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                       <strong style={{ fontSize: '0.85rem' }}>{asset.name}</strong>

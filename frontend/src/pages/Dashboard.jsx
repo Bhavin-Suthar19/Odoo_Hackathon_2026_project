@@ -200,7 +200,7 @@ export default function Dashboard({ setCurrentTab }) {
                 <div
                   key={ast.id}
                   style={{
-                    background: 'rgba(255, 255, 255, 0.02)',
+                    background: 'var(--surface-hover)',
                     border: '1px solid rgba(244, 63, 94, 0.2)',
                     borderRadius: '10px',
                     padding: '0.75rem 1rem',

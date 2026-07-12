@@ -230,7 +230,7 @@ export default function AssetDirectory() {
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                           <span style={{ fontWeight: 700 }}>{asset.name}</span>
                           {asset.shared && (
-                            <span style={{ fontSize: '0.68rem', color: '#c4b5fd', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '0.15rem' }}>
+                            <span style={{ fontSize: '0.68rem', color: 'var(--accent-purple-soft)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: '0.15rem' }}>
                               🔄 Shared Bookable Resource
                             </span>
                           )}
@@ -383,8 +383,8 @@ export default function AssetDirectory() {
 
               {/* Dynamic specs fields based on category schema */}
               {assetForm.category && (
-                <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.15)', marginTop: '0.5rem', marginBottom: '1.25rem' }}>
-                  <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: 800, color: '#c4b5fd', display: 'block', marginBottom: '0.75rem' }}>
+                <div style={{ border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px', background: 'var(--surface-inset)', marginTop: '0.5rem', marginBottom: '1.25rem' }}>
+                  <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', fontWeight: 800, color: 'var(--accent-purple-soft)', display: 'block', marginBottom: '0.75rem' }}>
                     Category Specifications ({assetForm.category})
                   </span>
                   {categories.find(c => c.name === assetForm.category)?.fields.length === 0 ? (
@@ -449,7 +449,7 @@ export default function AssetDirectory() {
 
             <div style={{ padding: '1.5rem' }}>
               {/* Asset Technical Details summary card */}
-              <div className="glass-panel" style={{ padding: '1rem', background: 'rgba(0,0,0,0.18)', marginBottom: '1.5rem' }}>
+              <div className="glass-panel" style={{ padding: '1rem', background: 'var(--surface-inset)', marginBottom: '1.5rem' }}>
                 <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 800, color: '#a78bfa', marginBottom: '0.65rem' }}>
                   Technical Specs Sheet
                 </h4>
@@ -509,7 +509,7 @@ export default function AssetDirectory() {
                       </span>
                     ) : (
                       assetAllocHistory.map((item, idx) => (
-                        <div key={idx} style={{ display: 'flex', gap: '0.75rem', background: 'rgba(255,255,255,0.02)', padding: '0.6rem 0.85rem', borderRadius: '8px', borderLeft: '3px solid #8b5cf6' }}>
+                        <div key={idx} style={{ display: 'flex', gap: '0.75rem', background: 'var(--surface-hover)', padding: '0.6rem 0.85rem', borderRadius: '8px', borderLeft: '3px solid #8b5cf6' }}>
                           <div style={{ flex: 1 }}>
                             <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>{item.details}</p>
                             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{item.type} • {item.date}</span>
@@ -532,7 +532,7 @@ export default function AssetDirectory() {
                       </span>
                     ) : (
                       assetMaintHistory.map((item, idx) => (
-                        <div key={idx} style={{ display: 'flex', gap: '0.75rem', background: 'rgba(255,255,255,0.02)', padding: '0.6rem 0.85rem', borderRadius: '8px', borderLeft: '3px solid #f43f5e' }}>
+                        <div key={idx} style={{ display: 'flex', gap: '0.75rem', background: 'var(--surface-hover)', padding: '0.6rem 0.85rem', borderRadius: '8px', borderLeft: '3px solid #f43f5e' }}>
                           <div style={{ flex: 1 }}>
                             <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>{item.issue}</p>
                             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
