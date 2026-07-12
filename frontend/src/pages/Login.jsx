@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert, Sparkles } from 'lucide-react';
 
 export default function Login({ setCurrentTab }) {
   const { login, error } = useAuth();
-  const [email, setEmail] = useState('admin@company.com');
-  const [password, setPassword] = useState('hackathon2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState(null);
+  const [showTestingView, setShowTestingView] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,11 +47,39 @@ export default function Login({ setCurrentTab }) {
   return (
     <div
       style={{
-        maxWidth: '460px',
+        width: '100%',
+        maxWidth: '480px',
         margin: '2rem auto',
+        position: 'relative',
         animation: 'fadeIn 0.3s ease',
       }}
     >
+      {/* Testing View Switch Button in Right Corner */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.75rem' }}>
+        <button
+          type="button"
+          onClick={() => setShowTestingView(!showTestingView)}
+          style={{
+            background: showTestingView ? 'rgba(139, 92, 246, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid',
+            borderColor: showTestingView ? '#a78bfa' : 'var(--border-glass)',
+            color: showTestingView ? '#fff' : '#c4b5fd',
+            padding: '0.45rem 0.9rem',
+            borderRadius: '999px',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <Sparkles size={14} color="#a78bfa" />
+          <span>{showTestingView ? 'Hide Testing View' : '🧪 Testing View (Demo UI)'}</span>
+        </button>
+      </div>
+
       <div className="glass-panel" style={{ padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
@@ -72,7 +101,7 @@ export default function Login({ setCurrentTab }) {
             Asset<span className="heading-gradient">Flow</span> Sign In
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-            ERP Resource & Lifecycle Portal
+            Enterprise Resource & Lifecycle ERP Portal
           </p>
         </div>
 
@@ -98,7 +127,7 @@ export default function Login({ setCurrentTab }) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label">Work Email Address</label>
             <div style={{ position: 'relative' }}>
               <Mail
                 size={18}
@@ -111,7 +140,7 @@ export default function Login({ setCurrentTab }) {
                 style={{ paddingLeft: '2.8rem' }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="developer@hackathon.dev"
+                placeholder="your.name@company.com"
                 required
               />
             </div>
@@ -143,43 +172,56 @@ export default function Login({ setCurrentTab }) {
             className="btn btn-primary"
             style={{ width: '100%', marginTop: '0.5rem', padding: '0.9rem' }}
           >
-            {submitting ? 'Authenticating...' : 'Sign In to Dashboard'}
+            {submitting ? 'Authenticating...' : 'Sign In to Portal'}
             <ArrowRight size={18} />
           </button>
         </form>
 
-        {/* Developer Quick Impersonators Grid */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-            <ShieldAlert size={14} color="#a78bfa" />
-            <span style={{ fontSize: '0.78rem', color: '#c4b5fd', fontWeight: 700, textTransform: 'uppercase' }}>
-              Developer Quick Access accounts:
-            </span>
-          </div>
+        {/* Optional Testing View Panel (Revealed when 'Testing View' button clicked) */}
+        {showTestingView && (
+          <div
+            style={{
+              marginTop: '2rem',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid var(--border-glass)',
+              animation: 'fadeIn 0.25s ease'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
+              <ShieldAlert size={14} color="#a78bfa" />
+              <span style={{ fontSize: '0.78rem', color: '#c4b5fd', fontWeight: 700, textTransform: 'uppercase' }}>
+                Testing View (Quick Role Switcher):
+              </span>
+            </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            {demoAccounts.map((acc) => (
-              <button
-                key={acc.email}
-                type="button"
-                onClick={() => handleQuickLogin(acc.email)}
-                disabled={submitting}
-                className="btn btn-secondary"
-                style={{
-                  padding: '0.5rem',
-                  fontSize: '0.75rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.1rem',
-                }}
-              >
-                <span style={{ color: acc.color, fontWeight: 800 }}>{acc.label}</span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{acc.email}</span>
-              </button>
-            ))}
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
+              Click any role below to test role-specific UI authorities and cloud data workflows:
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              {demoAccounts.map((acc) => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => handleQuickLogin(acc.email)}
+                  disabled={submitting}
+                  className="btn btn-secondary"
+                  style={{
+                    padding: '0.6rem',
+                    fontSize: '0.75rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.15rem',
+                  }}
+                >
+                  <span style={{ color: acc.color, fontWeight: 800 }}>{acc.label}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{acc.email}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div
           style={{
@@ -201,7 +243,7 @@ export default function Login({ setCurrentTab }) {
               fontFamily: 'var(--font-main)',
             }}
           >
-            Create Employee Account
+            Register New Employee Account
           </button>
         </div>
       </div>
