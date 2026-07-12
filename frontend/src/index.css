@@ -8,66 +8,68 @@
  */
 
 :root {
-  --bg-primary: #090b10;
-  --bg-secondary: #0f131d;
-  --bg-navbar: rgba(9, 11, 16, 0.85);
-  --surface-column: rgba(15, 19, 29, 0.55);
-  --surface-card: rgba(22, 28, 44, 0.9);
-  --surface-panel: rgba(15, 19, 29, 0.4);
-  --surface-panel-header: rgba(22, 28, 44, 0.85);
-  --surface-hover: rgba(255, 255, 255, 0.03);
-  --surface-subtle: rgba(255, 255, 255, 0.05);
-  --surface-inset: rgba(0, 0, 0, 0.15);
-  --surface-overlay: rgba(0, 0, 0, 0.7);
-  --accent-purple-soft: #c4b5fd;
-  --accent-rose-soft: #fda4af;
-  --accent-emerald-soft: #6ee7b7;
-  --accent-cyan-soft: #67e8f9;
-  --accent-yellow-soft: #fbbf24;
+  /* Industrial Swiss Precision Palette (4-6 core named hex values) */
+  --bg-primary: #1A1D20;            /* Charcoal Slate: Authoritative structural background */
+  --bg-secondary: #262A2E;          /* Cold Zinc: Technical secondary surface */
+  --bg-navbar: rgba(26, 29, 32, 0.95);
+  --surface-column: #262A2E;
+  --surface-card: #262A2E;
+  --surface-panel: #262A2E;
+  --surface-panel-header: #1A1D20;
+  --surface-hover: rgba(224, 107, 62, 0.08);
+  --surface-subtle: rgba(255, 255, 255, 0.04);
+  --surface-inset: #14171A;
+  --surface-overlay: rgba(15, 18, 22, 0.85);
 
-  --status-available: #34d399;
-  --status-available-bg: rgba(16, 185, 129, 0.12);
-  --status-available-border: rgba(16, 185, 129, 0.25);
+  --accent-purple-soft: #E06B3E;
+  --accent-rose-soft: #E06B3E;
+  --accent-emerald-soft: #1F7A5C;
+  --accent-cyan-soft: #88929E;
+  --accent-yellow-soft: #D9822B;
 
-  --status-allocated: #60a5fa;
-  --status-allocated-bg: rgba(59, 130, 246, 0.12);
-  --status-allocated-border: rgba(59, 130, 246, 0.25);
+  --status-available: #1F7A5C;      /* Safety Emerald */
+  --status-available-bg: rgba(31, 122, 92, 0.15);
+  --status-available-border: rgba(31, 122, 92, 0.4);
 
-  --status-reserved: #fbbf24;
-  --status-reserved-bg: rgba(245, 158, 11, 0.12);
-  --status-reserved-border: rgba(245, 158, 11, 0.25);
+  --status-allocated: #E06B3E;      /* Precision Copper */
+  --status-allocated-bg: rgba(224, 107, 62, 0.15);
+  --status-allocated-border: rgba(224, 107, 62, 0.4);
 
-  --status-maintenance: #fca5a5;
-  --status-maintenance-bg: rgba(239, 68, 68, 0.12);
-  --status-maintenance-border: rgba(239, 68, 68, 0.25);
+  --status-reserved: #D9822B;
+  --status-reserved-bg: rgba(217, 130, 43, 0.15);
+  --status-reserved-border: rgba(217, 130, 43, 0.4);
 
-  --status-lost: #f472b6;
-  --status-lost-bg: rgba(236, 72, 153, 0.12);
-  --status-lost-border: rgba(236, 72, 153, 0.25);
+  --status-maintenance: #C93B2B;
+  --status-maintenance-bg: rgba(201, 59, 43, 0.15);
+  --status-maintenance-border: rgba(201, 59, 43, 0.4);
 
-  --status-retired: #94a3b8;
-  --status-retired-bg: rgba(100, 116, 139, 0.12);
-  --status-retired-border: rgba(100, 116, 139, 0.25);
+  --status-lost: #88929E;
+  --status-lost-bg: rgba(136, 146, 158, 0.15);
+  --status-lost-border: rgba(136, 146, 158, 0.4);
 
-  --bg-card: rgba(22, 28, 44, 0.65);
-  --bg-card-hover: rgba(30, 38, 60, 0.8);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --border-glass-bright: rgba(139, 92, 246, 0.4);
+  --status-retired: #545B63;
+  --status-retired-bg: rgba(84, 91, 99, 0.15);
+  --status-retired-border: rgba(84, 91, 99, 0.4);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --bg-card: #262A2E;
+  --bg-card-hover: #2E3338;
+  --border-glass: #363B40;
+  --border-glass-bright: #E06B3E;
 
-  --accent-primary: #8b5cf6;
-  --accent-primary-hover: #7c3aed;
-  --accent-cyan: #06b6d4;
-  --accent-emerald: #10b981;
-  --accent-rose: #f43f5e;
+  --text-primary: #E4E8EE;          /* Alloy Silver */
+  --text-secondary: #88929E;        /* Muted Gunmetal */
+  --text-muted: #646E78;
 
-  --gradient-glow: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
-  --shadow-glow: 0 0 35px -5px rgba(139, 92, 246, 0.35);
+  --accent-primary: #E06B3E;        /* Precision Copper / Anodized Orange */
+  --accent-primary-hover: #D25E33;
+  --accent-cyan: #88929E;
+  --accent-emerald: #1F7A5C;
+  --accent-rose: #C93B2B;
 
-  --bg-header: rgba(9, 11, 16, 0.85);
+  --gradient-glow: none;
+  --shadow-glow: none;
+
+  --bg-header: #1A1D20;
 
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -1011,6 +1013,171 @@ html.light .chart-bar-container {
   
   .app-main {
     padding: 1rem !important;
+  }
+}
+
+/* ============================================================================
+ * INDUSTRIAL SWISS PRECISION SIGNATURE ELEMENTS & COMPONENT BEHAVIOR
+ * ============================================================================ */
+
+/* Signature Element: Precision Ledger Rail & Hardware Tag Shield */
+.glass-panel,
+.custom-table {
+  border-radius: 6px !important;
+  border: 1px solid var(--border-glass) !important;
+  border-left: 3px solid #262A2E !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, transform 0.1s ease !important;
+}
+
+.glass-panel:hover {
+  border-left-color: var(--accent-primary) !important;
+}
+
+/* Cards: Clear single affordance on hover/click (border change + immediate click registration) */
+.card-interactive,
+.glass-panel.clickable {
+  cursor: pointer;
+}
+
+.card-interactive:hover,
+.glass-panel.clickable:hover {
+  border-color: var(--accent-primary) !important;
+  border-left-color: var(--accent-primary) !important;
+}
+
+.card-interactive:active,
+.glass-panel.clickable:active {
+  transform: translateY(1px) !important;
+  border-color: #D25E33 !important;
+}
+
+/* Hardware Monospace Tag Shield */
+.hardware-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  background-color: #14171A;
+  border: 1px solid #363B40;
+  color: #E4E8EE;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* Modals/Dialogs: Anchored viewport overlay (position: fixed, centered, no pushing flow) */
+.modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(15, 18, 22, 0.85) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+}
+
+.modal-content {
+  background-color: #1A1D20 !important;
+  border: 1px solid #363B40 !important;
+  border-left: 4px solid var(--accent-primary) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+  max-width: 540px !important;
+  width: 90% !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  padding: 1.75rem !important;
+}
+
+/* Visible Keyboard Focus States for Accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="listbox"]:focus-visible,
+[role="option"]:focus-visible {
+  outline: 2px solid var(--accent-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* Custom Select Dropdown Styling & 120ms Animation */
+.custom-select-dropdown {
+  background-color: #1A1D20;
+  border: 1px solid #363B40;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  animation: dropdownFadeIn 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-select-option {
+  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  color: #E4E8EE;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 3px;
+  transition: background-color 0.1s ease;
+}
+
+.custom-select-option.highlighted,
+.custom-select-option:hover {
+  background-color: #262A2E;
+  color: #E06B3E;
+}
+
+.custom-select-option.selected {
+  font-weight: 700;
+  color: #E06B3E;
+}
+
+/* Industrial SweetAlert Popup Styling */
+.industrial-swal-popup {
+  border: 1px solid #363B40 !important;
+  border-left: 4px solid #E06B3E !important;
+  border-radius: 6px !important;
+  font-family: var(--font-main) !important;
+}
+
+.industrial-swal-title {
+  color: #E4E8EE !important;
+  font-weight: 700 !important;
+  font-size: 1.25rem !important;
+}
+
+.industrial-swal-btn {
+  background-color: #E06B3E !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  padding: 0.6rem 1.4rem !important;
+  border: none !important;
+}
+
+/* Respects prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

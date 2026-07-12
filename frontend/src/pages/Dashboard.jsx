@@ -53,6 +53,13 @@ export default function Dashboard({ setCurrentTab }) {
     return new Date(a.expectedReturnDate) >= new Date(todayStr);
   });
 
+  const recentOperations = user.role === 'Employee'
+    ? activityLogs.filter(log =>
+        (log.user && log.user.toLowerCase() === (user.name || '').toLowerCase()) ||
+        (log.details && (log.details.toLowerCase().includes((user.name || '').toLowerCase()) || log.details.toLowerCase().includes((user.email || '').toLowerCase())))
+      )
+    : activityLogs;
+
   return (
     <div>
       {/* Welcome Banner */}
@@ -229,18 +236,26 @@ export default function Dashboard({ setCurrentTab }) {
 
         {/* Recent Activity List */}
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 850, marginBottom: '1.25rem' }}>Recent Operations Stream</h3>
+          <h3 style={{ fontSize: '1.15rem', fontWeight: 850, marginBottom: '1.25rem' }}>
+            {user.role === 'Employee' ? 'My Recent Operations' : 'Recent Operations Stream'}
+          </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {activityLogs.slice(0, 4).map((log) => (
-              <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-purple-soft)', marginTop: '0.35rem', flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <strong>{log.action}</strong>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>by {log.user} • {log.date}</span>
+            {recentOperations.length === 0 ? (
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontStyle: 'italic', padding: '1rem', textAlign: 'center' }}>
+                No recent operations found for your account.
+              </span>
+            ) : (
+              recentOperations.slice(0, 5).map((log) => (
+                <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-purple-soft)', marginTop: '0.35rem', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <strong>{log.action}</strong>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>by {log.user} • {log.date}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

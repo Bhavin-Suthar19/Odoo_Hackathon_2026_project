@@ -88,7 +88,7 @@ function AppContent() {
     { id: 'allocation', label: 'Allocation & Transfer', icon: UserCheck, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'booking', label: 'Resource Booking', icon: Calendar, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
     { id: 'maintenance', label: 'Maintenance', icon: Wrench, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
-    { id: 'audit', label: 'Audit', icon: ClipboardCheck, roles: ['Admin', 'Asset Manager', 'Department Head', 'Employee'] },
+    { id: 'audit', label: 'Audit', icon: ClipboardCheck, roles: ['Admin', 'Asset Manager', 'Department Head'] },
     { id: 'reports', label: 'Reports', icon: BarChart3, roles: ['Admin', 'Asset Manager', 'Department Head'] },
   ];
 

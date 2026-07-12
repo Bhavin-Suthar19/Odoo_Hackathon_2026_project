@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Calendar, Clock, Plus, AlertTriangle, X, Check, Eye } from 'lucide-react';
+import { showAlert } from '../utils/alert';
 
 export default function ResourceBooking() {
   const { user } = useAuth();
@@ -75,7 +76,7 @@ export default function ResourceBooking() {
         endTime: '10:00',
         purpose: '',
       });
-      alert('Resource booked successfully!');
+      showAlert('Confirmed', 'Resource booked successfully!', 'success');
     } else {
       setFormError(result.message);
     }
@@ -87,6 +88,7 @@ export default function ResourceBooking() {
     await cancelBooking(cancelModalBooking.id, cancelMessage, user);
     setCancelModalBooking(null);
     setCancelMessage('');
+    showAlert('Cancelled', 'Reservation cancelled successfully.', 'info');
   };
 
   // Find resource details

@@ -3,6 +3,8 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ClipboardCheck, Plus, Check, X, AlertTriangle, Eye, ShieldAlert } from 'lucide-react';
 import Modal from '../components/Modal';
+import { showAlert } from '../utils/alert';
+import Swal from 'sweetalert2';
 
 export default function AssetAudit() {
   const { user } = useAuth();
@@ -36,7 +38,7 @@ export default function AssetAudit() {
     setScopeLocation('HQ Office 101');
     setAssignedAuditorEmail('');
     setShowCreateModal(false);
-    alert('Audit cycle created successfully!');
+    showAlert('Initialized', 'Audit cycle created successfully!', 'success');
   };
 
   const handleAuditAction = (auditId, assetId, result) => {
@@ -44,10 +46,22 @@ export default function AssetAudit() {
     updateAuditChecklist(auditId, assetId, result, notes, user);
   };
 
-  const handleCloseAudit = (auditId) => {
-    if (confirm('Are you sure you want to CLOSE this audit cycle? This will lock all checklist entries and mark missing assets as "Lost" in the system.')) {
+  const handleCloseAudit = async (auditId) => {
+    const result = await Swal.fire({
+      title: 'Close Audit Cycle?',
+      text: 'Are you sure you want to CLOSE this audit cycle? This will lock all checklist entries and mark missing assets as "Lost" in the system.',
+      icon: 'warning',
+      showCancelButton: true,
+      background: '#1A1D20',
+      color: '#E4E8EE',
+      confirmButtonColor: '#E06B3E',
+      cancelButtonColor: '#363B40',
+      confirmButtonText: 'Yes, Lock & Close'
+    });
+
+    if (result.isConfirmed) {
       closeAuditCycle(auditId, user);
-      alert('Audit cycle closed and locked.');
+      showAlert('Closed', 'Audit cycle closed and locked.', 'success');
     }
   };
 

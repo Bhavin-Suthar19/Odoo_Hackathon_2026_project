@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { BarChart3, TrendingUp, HelpCircle, AlertOctagon, RefreshCcw, Download } from 'lucide-react';
+import { showAlert } from '../utils/alert';
 
 export default function ReportsAnalytics() {
   const { assets, bookings, maintenances, departments } = useData();
@@ -68,7 +69,7 @@ export default function ReportsAnalytics() {
     setExporting(true);
     setTimeout(() => {
       setExporting(false);
-      alert('CSV Export completed! Downloader generated for assetflow_report_2026.csv');
+      showAlert('Export Complete', 'CSV Export completed! Downloader generated for assetflow_report_2026.csv', 'success');
     }, 1500);
   };
 

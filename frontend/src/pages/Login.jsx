@@ -4,8 +4,8 @@ import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert } from 'lucide-react';
 
 export default function Login({ setCurrentTab }) {
   const { login, error } = useAuth();
-  const [email, setEmail] = useState('admin@company.com');
-  const [password, setPassword] = useState('hackathon2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState(null);
 
@@ -23,25 +23,6 @@ export default function Login({ setCurrentTab }) {
       setLocalError(result.message);
     }
   };
-
-  const handleQuickLogin = async (roleEmail) => {
-    setSubmitting(true);
-    setLocalError(null);
-    const result = await login(roleEmail, 'hackathon2026');
-    setSubmitting(false);
-    if (result.success) {
-      setCurrentTab('dashboard');
-    } else {
-      setLocalError(result.message);
-    }
-  };
-
-  const demoAccounts = [
-    { label: 'Admin', email: 'admin@company.com', color: 'var(--accent-rose-soft)' },
-    { label: 'Asset Manager', email: 'manager@company.com', color: 'var(--accent-cyan)' },
-    { label: 'Dept Head', email: 'priya@company.com', color: 'var(--accent-emerald-soft)' },
-    { label: 'Employee', email: 'raj@company.com', color: 'var(--accent-purple-soft)' },
-  ];
 
   return (
     <div className="auth-split-container">
@@ -174,39 +155,6 @@ export default function Login({ setCurrentTab }) {
             <ArrowRight size={18} />
           </button>
         </form>
-
-        {/* Developer Quick Impersonators Grid */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-glass)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-            <ShieldAlert size={14} color="#a78bfa" />
-            <span style={{ fontSize: '0.78rem', color: 'var(--accent-purple-soft)', fontWeight: 700, textTransform: 'uppercase' }}>
-              Developer Quick Access accounts:
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            {demoAccounts.map((acc) => (
-              <button
-                key={acc.email}
-                type="button"
-                onClick={() => handleQuickLogin(acc.email)}
-                disabled={submitting}
-                className="btn btn-secondary"
-                style={{
-                  padding: '0.5rem',
-                  fontSize: '0.75rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.1rem',
-                }}
-              >
-                <span style={{ color: acc.color, fontWeight: 800 }}>{acc.label}</span>
-                <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{acc.email}</span>
-              </button>
-            ))}
-          </div>
-        </div>
 
         <div
           style={{

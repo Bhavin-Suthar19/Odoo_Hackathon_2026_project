@@ -3,6 +3,7 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { Wrench, Plus, CheckCircle, XCircle, UserPlus, Play, Check, AlertTriangle, X } from 'lucide-react';
 import Modal from '../components/Modal';
+import { showAlert } from '../utils/alert';
 
 export default function MaintenanceManagement() {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ export default function MaintenanceManagement() {
     setIssueDescription('');
     setPriority('Medium');
     setShowRaiseModal(false);
-    alert('Maintenance request submitted successfully!');
+    showAlert('Ticket Created', 'Maintenance request submitted successfully!', 'success');
   };
 
   const handleAssignSubmit = (e) => {
@@ -66,7 +67,7 @@ export default function MaintenanceManagement() {
     setResolutionNotes('');
     setResolveTicketId('');
     setShowResolveModal(false);
-    alert('Maintenance ticket resolved. Asset is now Available.');
+    showAlert('Resolved', 'Maintenance ticket resolved. Asset is now Available.', 'success');
   };
 
   // Roles verification
