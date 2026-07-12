@@ -33,6 +33,26 @@ export default function Dashboard({ setCurrentTab }) {
   const [showBookingQuick, setShowBookingQuick] = useState(false);
   const [showMaintQuick, setShowMaintQuick] = useState(false);
 
+  // Filter option: non-admin users only see their own activity; Admin can see all
+  const [showOnlyMyActivity, setShowOnlyMyActivity] = useState(user.role !== 'Admin');
+
+  const filteredActivityLogs = activityLogs.filter(log => {
+    if (user.role === 'Admin' && !showOnlyMyActivity) {
+      return true; // Admin can see every activity
+    }
+    const logUser = (log.user || '').toLowerCase();
+    const logEmail = (log.email || '').toLowerCase();
+    const logDetails = (log.details || '').toLowerCase();
+    const currentName = (user.name || '').toLowerCase();
+    const currentEmail = (user.email || '').toLowerCase();
+
+    return (
+      (currentName && logUser === currentName) ||
+      (currentEmail && logEmail === currentEmail) ||
+      (currentName && logDetails.includes(currentName))
+    );
+  });
+
   // 1. Calculate KPI Statistics
   const totalAssetsCount = assets.length;
   const availableCount = assets.filter(a => a.status === 'Available').length;
@@ -229,18 +249,54 @@ export default function Dashboard({ setCurrentTab }) {
 
         {/* Recent Activity List */}
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.15rem', fontWeight: 850, marginBottom: '1.25rem' }}>Recent Operations Stream</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 850 }}>
+              {showOnlyMyActivity ? 'My Recent Operations' : 'All Recent Operations Stream'}
+            </h3>
+
+            {user.role === 'Admin' ? (
+              <button
+                type="button"
+                onClick={() => setShowOnlyMyActivity(!showOnlyMyActivity)}
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '9999px',
+                  background: showOnlyMyActivity ? 'rgba(139, 92, 246, 0.2)' : 'var(--surface-hover)',
+                  border: '1px solid',
+                  borderColor: showOnlyMyActivity ? 'rgba(139, 92, 246, 0.5)' : 'var(--border-glass)',
+                  color: showOnlyMyActivity ? 'var(--accent-purple-soft)' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {showOnlyMyActivity ? 'Show All Activity (Admin)' : 'Show Only My Activity'}
+              </button>
+            ) : (
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', background: 'var(--surface-subtle)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}>
+                Filtered to your operations
+              </span>
+            )}
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {activityLogs.slice(0, 4).map((log) => (
-              <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-purple-soft)', marginTop: '0.35rem', flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <strong>{log.action}</strong>
-                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>by {log.user} • {log.date}</span>
-                </div>
+            {filteredActivityLogs.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>
+                No operations recorded yet for this account.
               </div>
-            ))}
+            ) : (
+              filteredActivityLogs.slice(0, 6).map((log) => (
+                <div key={log.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'start', fontSize: '0.85rem' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-purple-soft)', marginTop: '0.35rem', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <strong>{log.action}</strong>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', marginTop: '0.1rem' }}>{log.details}</p>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>by {log.user} • {log.date}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
