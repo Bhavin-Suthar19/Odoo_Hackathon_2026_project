@@ -4,14 +4,6 @@ import { Network, LogOut, ShieldAlert, ShieldCheck, User, Sun, Moon } from 'luci
 
 export default function Navbar({ currentTab, setCurrentTab, theme, setTheme }) {
   const { user, logout, impersonate } = useAuth();
-  const [isLight, setIsLight] = useState(
-    () => localStorage.getItem('af_theme') === 'light'
-  );
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('light', isLight);
-    localStorage.setItem('af_theme', isLight ? 'light' : 'dark');
-  }, [isLight]);
 
   const mockUsers = [
     { name: 'Admin User', email: 'admin@company.com', role: 'Admin' },

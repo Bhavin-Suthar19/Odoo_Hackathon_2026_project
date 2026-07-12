@@ -38,11 +38,9 @@ function AppContent() {
 
   useEffect(() => {
     localStorage.setItem('af_theme', theme);
-    if (theme === 'light') {
-      document.body.classList.add('light');
-    } else {
-      document.body.classList.remove('light');
-    }
+    const isLight = theme === 'light';
+    document.documentElement.classList.toggle('light', isLight);
+    document.body.classList.toggle('light', isLight);
   }, [theme]);
 
   // If user is not authenticated, render Login/Signup screens
